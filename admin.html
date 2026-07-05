@@ -3,753 +3,559 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIVE MATCH - لوحة التحكم</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>LIVE MATCH | لوحة التحكم الفاخرة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-black: #0d1117;
-            --bg-dark: #161b22;
-            --gh-gray: #21262d;
-            --gh-border: #30363d;
-            --gh-green: #238636;
-            --gh-green-hover: #2ea44f;
-            --gh-yellow: #f1e05a;
-            --gh-blue: #58a6ff;
-            --gh-red: #da3633;
-            --text-main: #c9d1d9;
-            --text-light: #f0f6fc;
-            --text-gray: #8b949e;
-            --glass-bg: rgba(22, 27, 34, 0.7);
-            --glass-border: rgba(48, 54, 61, 0.8);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        :root { 
+            --gold: #e5b80b; 
+            --bg: #050811; 
+            --card: #111827; 
+            --danger: #ff4757; 
+            --success: #10ac84; 
+            --blue: #2e86de;
+            --input-bg: #1e293b; 
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--bg); color: #fff; line-height: 1.6; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-            user-select: none;
-        }
+        .screen { display: none; padding: 20px; animation: fadeIn 0.3s; }
+        .active-screen { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        body {
-            background-color: var(--bg-black);
-            color: var(--text-main);
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+        header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 100; }
+        .back-btn { background: #1e293b; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; display: none; }
 
-        /* تخصيص السكرول بار */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-black); }
-        ::-webkit-scrollbar-thumb { background: var(--gh-border); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-gray); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-top: 15px; }
+        .box { background: var(--card); padding: 25px; border-radius: 18px; display: flex; align-items: center; gap: 15px; border: 1px solid #1e293b; cursor: pointer; transition: 0.3s; position: relative; }
+        .box:active { transform: scale(0.98); }
+        .box b { font-size: 18px; }
+        
+        .promo-box { background: rgba(229, 184, 11, 0.05); border: 1px dashed var(--gold); padding: 20px; border-radius: 18px; margin-bottom: 25px; }
 
-        .hidden { display: none !important; }
+        .item { background: var(--card); padding: 15px; border-radius: 12px; display: flex; gap: 15px; margin-bottom: 10px; border: 1px solid #1e293b; align-items: center; position: relative; }
+        .item-info { flex: 1; }
+        .actions { display: flex; gap: 15px; margin-top: 8px; }
+        
+        .badge { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; position: absolute; left: 15px; top: 15px; }
+        .badge-live { background: var(--danger); color: #fff; }
+        .badge-ended { background: #4b5563; color: #fff; }
+        .badge-time { background: var(--blue); color: #fff; }
 
-        /* تأثيرات التحميل العام والتوست */
-        #loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(8px);
-            z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: var(--transition);
-        }
-        #loading-overlay.active { opacity: 1; pointer-events: auto; }
-        .spinner {
-            width: 50px; height: 50px; border: 4px solid var(--gh-border);
-            border-top-color: var(--gh-yellow); border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
+        .form-container { text-align: right; max-width: 600px; margin: 0 auto; padding: 10px; }
+        .form-container h2 { text-align: center; margin-bottom: 20px; }
+        label { display: block; font-size: 13px; color: #9ca3af; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 14px; margin-bottom: 15px; background: var(--input-bg); border: 1px solid #374151; border-radius: 12px; color: #fff; font-size: 15px; outline: none; transition: 0.3s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+        textarea { resize: vertical; min-height: 90px; }
+        
+        .save-btn { background: var(--gold); color: #000; width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: 900; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .save-btn:hover { opacity: 0.9; }
+
+        #loader { position: fixed; inset: 0; background: rgba(5, 8, 17, 0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #loading-text { margin-top: 20px; font-weight: 600; color: var(--text-light); }
-
-        #toast-container { position: fixed; bottom: 20px; left: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
-        .toast {
-            padding: 12px 24px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; color: var(--text-light);
-            background: var(--bg-dark); border: 1px solid var(--gh-border); box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-            transform: translateX(-120%); animation: slideIn 0.3s forwards; display: flex; align-items: center; gap: 10px;
-        }
-        @keyframes slideIn { to { transform: translateX(0); } }
-        .toast.success { border-color: var(--gh-green); background: rgba(35, 134, 54, 0.2); }
-        .toast.error { border-color: var(--gh-red); background: rgba(218, 54, 51, 0.2); }
-
-        /* الشاشات الرئيسية */
-        .glass-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 12px;
-        }
-
-        /* واجهة تسجيل الدخول */
-        #login-page {
-            min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px;
-            background: radial-gradient(circle at center, #1f242c 0%, #0d1117 100%);
-        }
-        .login-box { width: 100%; max-width: 440px; padding: 40px 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-        .login-box i.fa-github { font-size: 4rem; color: var(--text-light); margin-bottom: 15px; }
-        .login-box h1 { font-size: 1.8rem; font-weight: 900; color: var(--text-light); margin-bottom: 25px; letter-spacing: 1px; }
-        
-        .form-group { text-align: right; margin-bottom: 20px; position: relative; }
-        .form-group label { display: block; font-size: 0.85rem; color: var(--text-gray); margin-bottom: 8px; font-weight: 600; }
-        .form-control {
-            width: 100%; background: var(--bg-black); border: 1px solid var(--gh-border); border-radius: 6px;
-            padding: 12px 16px; color: var(--text-light); font-size: 0.95rem; transition: var(--transition);
-        }
-        .form-control:focus { border-color: var(--gh-blue); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15); }
-        
-        .btn {
-            width: 100%; padding: 12px; border-radius: 6px; border: none; font-size: 1rem; font-weight: 700;
-            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            color: var(--text-light); transition: var(--transition);
-        }
-        .btn-green { background-color: var(--gh-green); }
-        .btn-green:hover { background-color: var(--gh-green-hover); }
-        .btn-gray { background-color: var(--gh-gray); border: 1px solid var(--gh-border); }
-        .btn-gray:hover { background-color: var(--gh-border); }
-        .btn-red { background-color: var(--gh-red); }
-        .btn-red:hover { opacity: 0.9; }
-
-        /* واجهة لوحة التحكم الرئيسي */
-        #admin-layout { min-height: 100vh; display: flex; flex-direction: column; }
-        header {
-            background: var(--bg-dark); border-bottom: 1px solid var(--gh-border);
-            position: sticky; top: 0; z-index: 100; padding: 15px 25px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
-        }
-        .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-area h2 { font-size: 1.3rem; font-weight: 900; color: var(--text-light); }
-        .logo-area span { background: var(--gh-gray); border: 1px solid var(--gh-border); padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; color: var(--gh-blue); }
-        .header-actions { display: flex; align-items: center; gap: 15px; }
-
-        /* نظام التبويب الداخلي (Tabs) */
-        .tabs-container { display: flex; background: var(--bg-black); border: 1px solid var(--gh-border); padding: 4px; border-radius: 8px; }
-        .tab-btn {
-            padding: 8px 20px; border: none; background: transparent; color: var(--text-gray);
-            font-size: 0.9rem; font-weight: 700; cursor: pointer; border-radius: 6px; transition: var(--transition);
-        }
-        .tab-btn.active { background: var(--gh-gray); color: var(--text-light); border: 1px solid var(--gh-border); }
-
-        main { flex: 1; padding: 30px 25px; max-width: 1400px; width: 100%; margin: 0 auto; }
-        .section-view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .section-view-header h3 { font-size: 1.4rem; font-weight: 800; color: var(--text-light); }
-        .section-view-header .btn { width: auto; padding: 10px 20px; font-size: 0.9rem; }
-
-        /* الكروت والشبكات */
-        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .card-item { padding: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); display: flex; flex-direction: column; transition: var(--transition); }
-        .card-item:hover { transform: translateY(-3px); border-color: var(--text-gray); }
-        
-        /* كرت المباراة */
-        .match-vs-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 10px 0; }
-        .match-team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
-        .match-team img { width: 50px; height: 50px; object-fit: contain; }
-        .match-team span { font-weight: 700; font-size: 0.95rem; color: var(--text-light); }
-        .match-vs-badge { font-weight: 900; font-size: 0.85rem; color: var(--gh-yellow); background: var(--gh-gray); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--gh-border); }
-        .match-time-status { text-align: center; padding: 6px; background: rgba(0,0,0,0.2); border-radius: 6px; font-weight: 700; font-size: 0.85rem; color: var(--gh-blue); margin-bottom: 20px; border: 1px solid var(--gh-border); }
-        .match-time-status.live { color: #fff; background: var(--gh-red); border-color: var(--gh-red); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-
-        /* كرت القناة */
-        .channel-info-container { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .channel-info-container img { width: 55px; height: 55px; object-fit: contain; border-radius: 8px; background: var(--bg-black); padding: 5px; border: 1px solid var(--gh-border); }
-        .channel-details { display: flex; flex-direction: column; gap: 4px; }
-        .channel-details h4 { font-size: 1.1rem; font-weight: 800; color: var(--text-light); }
-        .channel-badges { display: flex; gap: 6px; flex-wrap: wrap; }
-        .badge { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; border: 1px solid transparent; }
-        .badge-type { background: rgba(88, 166, 255, 0.1); color: var(--gh-blue); border-color: rgba(88, 166, 255, 0.2); }
-        .badge-quality { background: rgba(241, 224, 90, 0.1); color: var(--gh-yellow); border-color: rgba(241, 224, 90, 0.2); }
-        .badge-status-active { background: rgba(35, 134, 54, 0.1); color: var(--gh-green-hover); border-color: rgba(35, 134, 54, 0.2); }
-        .badge-status-inactive { background: rgba(218, 54, 51, 0.1); color: var(--gh-red); border-color: rgba(218, 54, 51, 0.2); }
-
-        /* أزرار الكروت */
-        .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
-        .card-actions .btn { padding: 8px; font-size: 0.8rem; }
-
-        /* النوافذ العائمة (Modals) */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px);
-            z-index: 1000; display: flex; justify-content: center; align-items: center; padding: 20px;
-            opacity: 0; pointer-events: none; transition: var(--transition);
-        }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; padding: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.7); animation: modalOpen 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes modalOpen { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--gh-border); padding-bottom: 15px; }
-        .modal-header h4 { font-size: 1.2rem; font-weight: 800; color: var(--text-light); }
-        .modal-header i { cursor: pointer; color: var(--text-gray); font-size: 1.2rem; transition: var(--transition); }
-        .modal-header i:hover { color: var(--text-light); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .modal-footer { display: flex; gap: 12px; margin-top: 25px; border-top: 1px solid var(--gh-border); padding-top: 25px; }
-        
-        select.form-control { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b949e' viewBox='0 0 16 16'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>"); background-repeat: no-repeat; background-position: left 15px center; padding-left: 35px; }
-
-        @media (max-width: 768px) {
-            header { padding: 15px; justify-content: center; text-align: center; }
-            .header-actions { width: 100%; justify-content: space-between; }
-            .form-row { grid-template-columns: 1fr; gap: 0; }
-            main { padding: 20px 15px; }
-            .section-view-header { flex-direction: column; gap: 15px; align-items: flex-start; }
-            .section-view-header .btn { width: 100%; }
-        }
     </style>
 </head>
 <body>
 
-    <div id="loading-overlay">
-        <div class="spinner"></div>
-        <p id="loading-text">جاري معالجة طلبك المتزامن مع غيت هاب...</p>
+<div id="loader">
+    <div style="border:3px solid #1e293b; border-top:3px solid var(--gold); width:45px; height:45px; border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+    <p id="loader-text" style="margin-top:15px; font-weight: bold;">جاري فحص الاتصال التلقائي والمزامنة...</p>
+</div>
+
+<div id="screen-login" class="screen active-screen">
+    <div style="text-align:center; max-width: 440px; margin: 80px auto 0 auto; padding: 20px;">
+        <h1 style="color:var(--gold); font-weight:900; font-size: 38px;">LIVE MATCH</h1>
+        <p style="margin-bottom:30px; opacity:0.7; font-size: 14px;">لوحة إدارة المباريات، التشكيلات، والإشعار الشفاف الفاخر</p>
+        
+        <input type="password" id="token" placeholder="GitHub Token (التوكن الخاص بك)">
+        <input type="text" id="repo" placeholder="المستودع الخاص بك (user/repo)">
+        
+        <button class="save-btn" onclick="loginToPlatform()">تسجيل الدخول للمنصة السحابية 🔓</button>
     </div>
+</div>
 
-    <div id="toast-container"></div>
+<header id="nav" style="display:none">
+    <div class="back-btn" id="backBtn" onclick="goBack()">⬅ رجوع للمكتبة</div>
+    <div style="font-weight:900; color: var(--gold); font-size: 18px;" id="nav-title">LIVE MATCH PANEL</div>
+</header>
 
-    <section id="login-page">
-        <div class="login-box glass-card">
-            <i class="fa-brands fa-github"></i>
-            <h1>LIVE MATCH</h1>
-            <div class="form-group">
-                <label for="login-token">GitHub Personal Access Token</label>
-                <input type="password" id="login-token" class="form-control">
+<div id="screen-home" class="screen">
+    <div class="promo-box">
+        <h3 style="color:var(--gold); margin-bottom: 15px; font-size: 16px;">📢 المربع الشفاف (الإشعار العلوي المثبت بأول الموقع)</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+                <label>عنوان الإشعار الترويجي</label>
+                <input type="text" id="p-notice-title" placeholder="اكتب نص الإشعار هنا">
             </div>
-            <div class="form-group">
-                <label for="login-repo">Repository</label>
-                <input type="text" id="login-repo" class="form-control">
+            <div>
+                <label>رابط صورة الإشعار</label>
+                <input type="url" id="p-notice-img" placeholder="https://">
             </div>
-            <button class="btn btn-green" onclick="performAuthentication()"><i class="fa-solid fa-plug"></i> الاتصال بـ GitHub</button>
         </div>
-    </section>
-
-    <div id="admin-layout" class="hidden">
-        <header>
-            <div class="logo-area">
-                <h2>LIVE MATCH</h2>
-                <span id="repo-display-badge"></span>
-            </div>
-            <div class="header-actions">
-                <div class="tabs-container">
-                    <button id="tab-matches-btn" class="tab-btn active" onclick="switchActiveTab('matches')"><i class="fa-solid fa-soccer-ball"></i> المباريات</button>
-                    <button id="tab-channels-btn" class="tab-btn" onclick="switchActiveTab('channels')"><i class="fa-solid fa-tv"></i> القنوات</button>
-                </div>
-                <button class="btn btn-gray" style="width:auto; padding:8px 15px; font-size:0.85rem;" onclick="logOutSession()"><i class="fa-solid fa-sign-out-alt"></i> خروج</button>
-            </div>
-        </header>
-
-        <main>
-            <section id="view-matches">
-                <div class="section-view-header">
-                    <h3>جدول المباريات الحالية</h3>
-                    <button class="btn btn-green" onclick="triggerMatchModal()"><i class="fa-solid fa-plus"></i> إضافة مباراة جديدة</button>
-                </div>
-                <div id="matches-wrapper" class="items-grid"></div>
-            </section>
-
-            <section id="view-channels" class="hidden">
-                <div class="section-view-header">
-                    <h3>قنوات البث التلفزيوني</h3>
-                    <button class="btn btn-green" onclick="triggerChannelModal()"><i class="fa-solid fa-plus"></i> إضافة قناة جديدة</button>
-                </div>
-                <div id="channels-wrapper" class="items-grid"></div>
-            </section>
-        </main>
+        <label>رابط التوجيه عند ضغط الزائر (اختياري)</label>
+        <div style="display: flex; gap: 10px;">
+            <input type="url" id="p-notice-link" placeholder="https://">
+            <button onclick="saveGlobalNotice()" style="background:var(--success); color:#fff; border:none; padding:0 20px; border-radius:12px; font-weight:bold; height: 53px; cursor:pointer;">حفظ الإشعار ✨</button>
+        </div>
     </div>
 
-    <div id="match-modal" class="modal-overlay" onclick="closeModalOnOuterClick(event, 'match-modal')">
-        <div class="modal-content glass-card">
-            <div class="modal-header">
-                <h4 id="match-modal-title">إضافة مباراة جديدة</h4>
-                <i class="fa-solid fa-xmark" onclick="hideModal('match-modal')"></i>
+    <h2 style="margin-bottom: 15px; font-size: 20px;">أقسام التحكم السريع 🏟️</h2>
+    <div class="grid">
+        <div class="box" onclick="showSectionScreen('matches')">
+            <span style="font-size: 32px;">⚽</span>
+            <div>
+                <b>جدول المباريات الحية</b>
+                <p style="font-size:12px; opacity:0.6;">الحالات الثلاثة والتشكيلة التكتيكية</p>
             </div>
-            <form id="match-form" onsubmit="commitMatchForm(event)">
-                <input type="hidden" id="match-id">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="m-team1">اسم الفريق الأول</label>
-                        <input type="text" id="m-team1" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="m-team2">اسم الفريق الثاني</label>
-                        <input type="text" id="m-team2" class="form-control" required>
-                    </div>
+        </div>
+        <div class="box" onclick="showSectionScreen('channels')">
+            <span style="font-size: 32px;">📺</span>
+            <div>
+                <b>قنوات البث المباشر</b>
+                <p style="font-size:12px; opacity:0.6;">إضافة وتعديل روابط البث الناقلة</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="screen-items" class="screen">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 id="items-title" style="font-size: 22px;">قائمة العناصر</h2>
+        <button id="add-new-btn" onclick="openDynamicForm()" style="background:var(--success); color:#fff; padding:10px 20px; border-radius:10px; border:none; font-weight:bold; cursor:pointer;">➕ إضافة عنصر جديد</button>
+    </div>
+    <div id="items-list"></div>
+</div>
+
+<div id="screen-form" class="screen">
+    <div class="form-container">
+        <h2 id="form-title">إضافة بيانات الحدث</h2>
+        <input type="hidden" id="editId">
+
+        <div id="match-fields">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div>
+                    <label>اسم الفريق الأول</label>
+                    <input type="text" id="m-team1" placeholder="مثال: الأهلي">
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="m-team1Logo">رابط لوجو الفريق الأول</label>
-                        <input type="url" id="m-team1Logo" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="m-team2Logo">رابط لوجو الفريق الثاني</label>
-                        <input type="url" id="m-team2Logo" class="form-control" required>
-                    </div>
+                <div>
+                    <label>اسم الفريق الثاني</label>
+                    <input type="text" id="m-team2" placeholder="مثال: الزمالك">
                 </div>
-                <div class="form-group">
-                    <label for="m-time">التوقيت</label>
-                    <input type="text" id="m-time" class="form-control" oninput="toggleMatchStatusField()">
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div>
+                    <label>رابط لوجو الفريق الأول</label>
+                    <input type="url" id="m-team1Logo" placeholder="https://">
                 </div>
-                <div class="form-group" id="match-status-group">
-                    <label for="m-status">الحالة</label>
-                    <select id="m-status" class="form-control">
-                        <option value="LIVE">LIVE</option>
-                        <option value="انتهت">انتهت</option>
+                <div>
+                    <label>رابط لوجو الفريق الثاني</label>
+                    <input type="url" id="m-team2Logo" placeholder="https://">
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div>
+                    <label>اسم البطولة</label>
+                    <input type="text" id="m-tournament" placeholder="الدوري المصري">
+                </div>
+                <div>
+                    <label>رابط البث المباشر للمباراة (M3U8)</label>
+                    <input type="url" id="m-url" placeholder="https://">
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div>
+                    <label>الملعب</label>
+                    <input type="text" id="m-stadium" placeholder="ستاد القاهرة">
+                </div>
+                <div>
+                    <label>المعلق</label>
+                    <input type="text" id="m-commentator" placeholder="عصام الشوالي">
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div>
+                    <label>التوقيت (لو لم تبدأ - مثال: 09:00 PM)</label>
+                    <input type="text" id="m-time" placeholder="اتركه فارغاً لتفعيل الحالات" oninput="manageStatusDropdown()">
+                </div>
+                <div id="status-wrapper">
+                    <label>الحالة المباشرة للمباراة</label>
+                    <select id="m-status">
+                        <option value="live">LIVE (شغالة الآن)</option>
+                        <option value="ended">انتهت</option>
                     </select>
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-green"><i class="fa-solid fa-floppy-disk"></i> حفظ البيانات</button>
-                    <button type="button" class="btn btn-gray" onclick="hideModal('match-modal')">إلغاء</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="channel-modal" class="modal-overlay" onclick="closeModalOnOuterClick(event, 'channel-modal')">
-        <div class="modal-content glass-card">
-            <div class="modal-header">
-                <h4 id="channel-modal-title">إضافة قناة جديدة</h4>
-                <i class="fa-solid fa-xmark" onclick="hideModal('channel-modal')"></i>
             </div>
-            <form id="channel-form" onsubmit="commitChannelForm(event)">
-                <input type="hidden" id="channel-id">
-                <div class="form-group">
-                    <label for="c-name">اسم القناة</label>
-                    <input type="text" id="c-name" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="c-logo">رابط اللوجو</label>
-                    <input type="url" id="c-logo" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="c-url">رابط البث</label>
-                    <input type="url" id="c-url" class="form-control" required>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="c-type">نوع البث</label>
-                        <select id="c-type" class="form-control">
-                            <option value="HLS">HLS</option>
-                            <option value="DASH">DASH</option>
-                            <option value="IFRAME">IFRAME</option>
-                            <option value="EMBED">EMBED</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="c-quality">الجودة</label>
-                        <select id="c-quality" class="form-control">
-                            <option value="Auto">Auto</option>
-                            <option value="1080p">1080p</option>
-                            <option value="720p">720p</option>
-                            <option value="480p">480p</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="c-status">الحالة</label>
-                    <select id="c-status" class="form-control">
-                        <option value="نشطة">نشطة</option>
-                        <option value="معطلة">معطلة</option>
+            
+            <label style="color:var(--gold);">تشكيلة الفريق الأول (اكتب كل لاعب في سطر على نظام: الاسم - المركز)</label>
+            <textarea id="m-lineup1" placeholder="مثال:&#10;محمد الشناوي - حارس مرمى&#10;رامي ربيعة - مدافع"></textarea>
+
+            <label style="color:var(--gold);">تشكيلة الفريق الثاني (اكتب كل لاعب في سطر على نظام: الاسم - المركز)</label>
+            <textarea id="m-lineup2" placeholder="مثال:&#10;محمد عواد - حارس مرمى&#10;حمزة المثلوثي - مدافع"></textarea>
+        </div>
+
+        <div id="channel-fields">
+            <label>اسم القناة</label>
+            <input type="text" id="c-name" placeholder="beIN SPORTS 1">
+            <label>رابط لوجو القناة</label>
+            <input type="url" id="c-logo" placeholder="https://">
+            <label>رابط البث المباشر للقناة</label>
+            <input type="url" id="c-url" placeholder="https://">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div>
+                    <label>نوع البث</label>
+                    <select id="c-type">
+                        <option value="HLS">HLS</option>
+                        <option value="DASH">DASH</option>
+                        <option value="IFRAME">IFRAME</option>
                     </select>
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-green"><i class="fa-solid fa-floppy-disk"></i> حفظ القناة</button>
-                    <button type="button" class="btn btn-gray" onclick="hideModal('channel-modal')">إلغاء</button>
+                <div>
+                    <label>الجودة الافتراضية</label>
+                    <select id="c-quality">
+                        <option value="Auto">Auto</option>
+                        <option value="1080p">1080p</option>
+                        <option value="720p">720p</option>
+                    </select>
                 </div>
-            </form>
+            </div>
         </div>
+
+        <button class="save-btn" onclick="saveDynamicData()" style="margin-top: 10px;">حفظ وتأكيد البيانات سحابياً ✅</button>
     </div>
+</div>
 
+<script>
+    let database = { notification: { title: '', image: '', link: '' }, matches: [], channels: [] };
+    let config = { token: '', repo: '', sha: '' };
+    let currentMode = ''; // ترمز لـ matches أو channels
 
-    <script>
-        // كائن الإعدادات والذاكرة المؤقتة لقاعدة البيانات والـ SHA الحالي
-        let SESSION = { token: '', repo: '', sha: '' };
-        let database = { matches: [], channels: [] };
-        let activeTab = 'matches';
+    // الفحص التلقائي المسجل في الكوكيز أو التخزين المحلي لسرعة الدخول
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedToken = localStorage.getItem("lm_token");
+        const savedRepo = localStorage.getItem("lm_repo");
+        if(savedToken && savedRepo) {
+            document.getElementById('token').value = savedToken;
+            document.getElementById('repo').value = savedRepo;
+            loginToPlatform(true);
+        }
+    });
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const storedToken = localStorage.getItem("lm_gh_token");
-            const storedRepo = localStorage.getItem("lm_gh_repo");
+    function showLoader(visible, text = "جاري الحفظ والمزامنة السحابية...") {
+        document.getElementById('loader-text').innerText = text;
+        document.getElementById('loader').style.display = visible ? 'flex' : 'none';
+    }
+
+    // دالة الدخول الذكية: تقوم بالتحقق الفعلي من مستودع الـ GitHub وإذا كان الخطأ حقيقي توقف الدخول فوراً
+    async function loginToPlatform(isAuto = false) {
+        config.token = document.getElementById('token').value.trim();
+        config.repo = document.getElementById('repo').value.trim();
+        
+        if(!config.token || !config.repo) return alert("يرجى إدخال التوكن واسم المستودع بشكل صحيح.");
+        
+        showLoader(true, "جاري فحص الصلاحيات والاتصال بالمستودع الفعلي...");
+        try {
+            // فحص صلاحية التوكن والـ repo من خلال طلب رسمي لـ GitHub API
+            const checkRes = await fetch(`https://api.github.com/repos/${config.repo}`, {
+                headers: { 'Authorization': `token ${config.token}` }
+            });
             
-            if(storedToken && storedRepo) {
-                document.getElementById("login-token").value = storedToken;
-                document.getElementById("login-repo").value = storedRepo;
-                performAuthentication(true);
-            }
-        });
-
-        function makeNotification(message, state = 'success') {
-            const container = document.getElementById("toast-container");
-            const element = document.createElement("div");
-            element.className = `toast ${state}`;
-            element.innerHTML = `<i class="fa-solid ${state === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> <span>${message}</span>`;
-            container.appendChild(element);
-            setTimeout(() => { element.style.opacity = '0'; setTimeout(() => element.remove(), 300); }, 3500);
-        }
-
-        function toggleLoader(status, txt = "جاري معالجة وتحديث البيانات...") {
-            const overlay = document.getElementById("loading-overlay");
-            document.getElementById("loading-text").innerText = txt;
-            overlay.classList.toggle("active", status);
-        }
-
-        // تحويل الصفحات الداخلية الرئيسية
-        function switchActiveTab(tabKey) {
-            activeTab = tabKey;
-            document.getElementById("tab-matches-btn").classList.toggle("active", tabKey === 'matches');
-            document.getElementById("tab-channels-btn").classList.toggle("active", tabKey === 'channels');
-            document.getElementById("view-matches").classList.toggle("hidden", tabKey !== 'matches');
-            document.getElementById("view-channels").classList.toggle("hidden", tabKey !== 'channels');
-            renderUIComponents();
-        }
-
-        function showModal(id) { document.getElementById(id).classList.add("active"); }
-        function hideModal(id) { document.getElementById(id).classList.remove("active"); }
-        function closeModalOnOuterClick(e, id) { if(e.target.id === id) hideModal(id); }
-
-        function toggleMatchStatusField() {
-            const timeValue = document.getElementById("m-time").value;
-            const statusGroup = document.getElementById("match-status-group");
-            if(timeValue.trim() !== "") {
-                statusGroup.classList.add("hidden");
-            } else {
-                statusGroup.classList.remove("hidden");
-            }
-        }
-
-        // ==========================================
-        // عمليات التحقق، المزامنة والتسجيل في المستودع
-        // ==========================================
-        async function performAuthentication(autoLogin = false) {
-            const token = document.getElementById("login-token").value.trim();
-            const repo = document.getElementById("login-repo").value.trim();
-
-            if(!token || !repo) {
-                makeNotification("يرجى إدخال جميع متطلبات الاتصال بغيت هاب.", "error");
-                return;
+            if(!checkRes.ok) {
+                throw new Error("بيانات الاتصال غير صحيحة أو التوكن منتهي! يرجى التأكد من البيانات.");
             }
 
-            toggleLoader(true, "جاري فحص المستودع وصلاحيات التوكن عبر غيت هاب API...");
-            try {
-                const res = await fetch(`https://api.github.com/repos/${repo}`, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                
-                if(!res.ok) throw new Error("المستودع غير موجود أو التوكن غير صالح.");
-                
-                localStorage.setItem("lm_gh_token", token);
-                localStorage.setItem("lm_gh_repo", repo);
-                SESSION.token = token;
-                SESSION.repo = repo;
+            // تخزين البيانات محلياً بعد التأكد من صحتها تماماً
+            localStorage.setItem("lm_token", config.token);
+            localStorage.setItem("lm_repo", config.repo);
 
-                document.getElementById("repo-display-badge").innerText = repo;
-                document.getElementById("login-page").classList.add("hidden");
-                document.getElementById("admin-layout").classList.remove("hidden");
-
-                makeNotification("تم الاتصال بمستودع غيت هاب بنجاح تام.");
-                await fetchOrCreateDataFile();
-            } catch(err) {
-                makeNotification(err.message, "error");
-                if(autoLogin) logOutSession();
-            } finally {
-                toggleLoader(false);
-            }
-        }
-
-        function logOutSession() {
-            localStorage.removeItem("lm_gh_token");
-            localStorage.removeItem("lm_gh_repo");
-            document.getElementById("admin-layout").classList.add("hidden");
-            document.getElementById("login-page").classList.remove("hidden");
-            makeNotification("تم تسجيل الخروج وإلغاء الجلسة.");
-        }
-
-        // جلب أو إنشاء ملف data.json تلقائياً
-        async function fetchOrCreateDataFile() {
-            toggleLoader(true, "جاري مزامنة وسحب ملف data.json...");
-            try {
-                const res = await fetch(`https://api.github.com/repos/${SESSION.repo}/contents/data.json`, {
-                    headers: { 'Authorization': `token ${SESSION.token}`, 'Cache-Control': 'no-cache' }
-                });
-
-                if(res.status === 404) {
-                    // تحضير قاعدة بيانات فارغة مطابقة تماماً للمواصفات
-                    database = { matches: [], channels: [] };
-                    SESSION.sha = '';
-                    await pushDatabaseToGithub("إعداد الهيكل الافتراضي لملف data.json");
-                } else if(res.ok) {
-                    const data = await res.json();
-                    SESSION.sha = data.sha;
-                    const contentDecoded = decodeURIComponent(escape(atob(data.content)));
-                    database = JSON.parse(contentDecoded);
-                    
-                    // تأكيد بقاء الهياكل والمصفوفات الأساسية آمنة وغير محذوفة
-                    if(!database.matches) database.matches = [];
-                    if(!database.channels) database.channels = [];
-                    
-                    renderUIComponents();
-                } else {
-                    throw new Error("خطأ غير متوقع أثناء تحميل البيانات السحابية.");
-                }
-            } catch(err) {
-                makeNotification(err.message, "error");
-            } finally {
-                toggleLoader(false);
-            }
-        }
-
-        // دفع التغييرات والتحديث الفوري للـ SHA الجديد لمنع أي تعارض مستقبلي
-        async function pushDatabaseToGithub(commitMessage) {
-            toggleLoader(true, "جاري عمل Commit جديد ورفع الملف إلى غيت هاب...");
-            try {
-                const jsonString = JSON.stringify(database, null, 4);
-                const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
-                
-                const bodyPayload = {
-                    message: commitMessage,
-                    content: base64Content
-                };
-                if(SESSION.sha) bodyPayload.sha = SESSION.sha;
-
-                const res = await fetch(`https://api.github.com/repos/${SESSION.repo}/contents/data.json`, {
-                    method: 'PUT',
-                    headers: { 
-                        'Authorization': `token ${SESSION.token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(bodyPayload)
-                });
-
-                if(!res.ok) throw new Error("فشل الرفع السحابي وتحديث الـ SHA، يرجى إعادة المحاولة.");
-                
-                const responseData = await res.json();
-                SESSION.sha = responseData.content.sha; // تحديث الـ SHA للـ Commit التالي
-                
-                makeNotification("تم الرفع والحفظ التلقائي في غيت هاب وبناء التحديث الحركي للموقع.");
-                renderUIComponents();
-            } catch(err) {
-                makeNotification(err.message, "error");
-            } finally {
-                toggleLoader(false);
-            }
-        }
-
-        // ==========================================
-        // معالجة وبناء عناصر العرض والـ Cards
-        // ==========================================
-        function renderUIComponents() {
-            if(activeTab === 'matches') {
-                const wrapper = document.getElementById("matches-wrapper");
-                wrapper.innerHTML = "";
-                if(database.matches.length === 0) {
-                    wrapper.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--text-gray); padding:20px;">لا يوجد مباريات مضافة حالياً.</p>`;
-                    return;
-                }
-                database.matches.forEach((match, index) => {
-                    const isLive = match.status === 'LIVE' && (!match.time || match.time.trim() === "");
-                    const displayStatusText = (match.time && match.time.trim() !== "") ? match.time : match.status;
-                    
-                    const card = document.createElement("div");
-                    card.className = "card-item glass-card";
-                    card.innerHTML = `
-                        <div class="match-vs-container">
-                            <div class="match-team">
-                                <img src="${match.team1Logo}" alt="Logo">
-                                <span>${match.team1}</span>
-                            </div>
-                            <div class="match-vs-badge">VS</div>
-                            <div class="match-team">
-                                <img src="${match.team2Logo}" alt="Logo">
-                                <span>${match.team2}</span>
-                            </div>
-                        </div>
-                        <div class="match-time-status ${isLive ? 'live' : ''}">${displayStatusText}</div>
-                        <div class="card-actions">
-                            <button class="btn btn-gray" onclick="editMatchItem('${match.id}')"><i class="fa-solid fa-edit"></i> تعديل</button>
-                            <button class="btn btn-gray" style="color:var(--gh-yellow);" onclick="cloneMatchItem('${match.id}')"><i class="fa-solid fa-copy"></i> نسخة</button>
-                            <button class="btn btn-red" onclick="deleteMatchItem('${match.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
-                            <button class="btn btn-gray" style="color:var(--gh-blue);" onclick="moveElementUp('matches', ${index})"><i class="fa-solid fa-arrow-up-long"></i> حفظ الترتيب</button>
-                        </div>
-                    `;
-                    wrapper.appendChild(card);
-                });
-            } else {
-                const wrapper = document.getElementById("channels-wrapper");
-                wrapper.innerHTML = "";
-                if(database.channels.length === 0) {
-                    wrapper.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--text-gray); padding:20px;">لا يوجد قنوات مضافة حالياً.</p>`;
-                    return;
-                }
-                database.channels.forEach((channel, index) => {
-                    const statusClass = channel.status === 'نشطة' ? 'badge-status-active' : 'badge-status-inactive';
-                    const card = document.createElement("div");
-                    card.className = "card-item glass-card";
-                    card.innerHTML = `
-                        <div class="channel-info-container">
-                            <img src="${channel.logo}" alt="Channel Logo">
-                            <div class="channel-details">
-                                <h4>${channel.name}</h4>
-                                <div class="channel-badges">
-                                    <span class="badge badge-type">${channel.type}</span>
-                                    <span class="badge badge-quality">${channel.quality}</span>
-                                    <span class="badge ${statusClass}">${channel.status}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn btn-gray" onclick="editChannelItem('${channel.id}')"><i class="fa-solid fa-edit"></i> تعديل</button>
-                            <button class="btn btn-gray" style="color:var(--gh-yellow);" onclick="cloneChannelItem('${channel.id}')"><i class="fa-solid fa-copy"></i> نسخة</button>
-                            <button class="btn btn-red" onclick="deleteChannelItem('${channel.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
-                            <button class="btn btn-gray" style="color:var(--gh-blue);" onclick="moveElementUp('channels', ${index})"><i class="fa-solid fa-arrow-up-long"></i> حفظ الترتيب</button>
-                        </div>
-                    `;
-                    wrapper.appendChild(card);
-                });
-            }
-        }
-
-        // ==========================================
-        // منطقيات وإجراءات قسم المباريات (CRUD)
-        // ==========================================
-        function triggerMatchModal() {
-            document.getElementById("match-modal-title").innerText = "إضافة مباراة جديدة";
-            document.getElementById("match-form").reset();
-            document.getElementById("match-id").value = "";
-            document.getElementById("match-status-group").classList.remove("hidden");
-            showModal("match-modal");
-        }
-
-        function editMatchItem(id) {
-            const item = database.matches.find(m => m.id === id);
-            if(!item) return;
-            document.getElementById("match-modal-title").innerText = "تعديل بيانات المباراة";
-            document.getElementById("match-id").value = item.id;
-            document.getElementById("m-team1").value = item.team1;
-            document.getElementById("m-team2").value = item.team2;
-            document.getElementById("m-team1Logo").value = item.team1Logo;
-            document.getElementById("m-team2Logo").value = item.team2Logo;
-            document.getElementById("m-time").value = item.time;
-            document.getElementById("m-status").value = item.status || "LIVE";
-            toggleMatchStatusField();
-            showModal("match-modal");
-        }
-
-        async function commitMatchForm(e) {
-            e.preventDefault();
-            const id = document.getElementById("match-id").value;
-            const timeVal = document.getElementById("m-time").value.trim();
+            // جلب ملف البيانات
+            const res = await fetch(`https://api.github.com/repos/${config.repo}/contents/data.json`, {
+                headers: { 'Authorization': `token ${config.token}`, 'Cache-Control': 'no-cache' }
+            });
             
-            const matchObject = {
-                id: id ? id : 'match_' + Date.now(),
-                team1: document.getElementById("m-team1").value.trim(),
-                team2: document.getElementById("m-team2").value.trim(),
-                team1Logo: document.getElementById("m-team1Logo").value.trim(),
-                team2Logo: document.getElementById("m-team2Logo").value.trim(),
+            if (res.status === 404) {
+                // تأسيس وتشييد الملف إذا لم يكن موجوداً
+                database = { notification: { title: '', image: '', link: '' }, matches: [], channels: [] };
+                config.sha = '';
+                await syncDataToGithub("تأسيس قاعدة بيانات لايف ماتش الافتراضية");
+            } else if (res.ok) {
+                const file = await res.json();
+                config.sha = file.sha;
+                database = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+                
+                // التأكد من مصفوفات النظام لحمايتها من الانهيار
+                if(!database.notification) database.notification = { title: '', image: '', link: '' };
+                if(!database.matches) database.matches = [];
+                if(!database.channels) database.channels = [];
+
+                // تعبئة حقول الإشعار الترويجي في الصفحة الرئيسية للوحة
+                document.getElementById('p-notice-title').value = database.notification.title || "";
+                document.getElementById('p-notice-img').value = database.notification.image || "";
+                document.getElementById('p-notice-link').value = database.notification.link || "";
+            }
+
+            document.getElementById('screen-login').classList.remove('active-screen');
+            document.getElementById('nav').style.display = 'flex';
+            showScreen('screen-home');
+
+        } catch (e) {
+            alert(e.message);
+            if(isAuto) clearSessionData();
+        } finally {
+            showLoader(false);
+        }
+    }
+
+    function clearSessionData() {
+        localStorage.removeItem("lm_token");
+        localStorage.removeItem("lm_repo");
+        document.getElementById('screen-login').classList.add('active-screen');
+        document.getElementById('nav').style.display = 'none';
+        showScreen('screen-login');
+    }
+
+    function showSectionScreen(mode) {
+        currentMode = mode;
+        document.getElementById('items-title').innerText = mode === 'matches' ? "أحداث جدول المباريات الحالي" : "قنوات البث الحي المتوفرة";
+        document.getElementById('add-new-btn').innerText = mode === 'matches' ? "➕ إضافة مباراة جديدة" : "➕ إضافة قناة بث";
+        renderItemsList();
+        showScreen('screen-items');
+    }
+
+    // بناء وتحديث عرض العناصر حسب الأقسام والتوافق مع التعديلات
+    function renderItemsList() {
+        const listDiv = document.getElementById('items-list');
+        listDiv.innerHTML = '';
+
+        if(currentMode === 'matches') {
+            if(database.matches.length === 0) listDiv.innerHTML = '<p style="text-align:center;opacity:0.5;padding:20px;">لا توجد مباريات مضافة حالياً.</p>';
+            database.matches.forEach((m, idx) => {
+                const hasTime = m.time && m.time.trim() !== "";
+                const badge = hasTime ? `<span class="badge badge-time">${m.time}</span>` : (m.status === 'live' ? `<span class="badge badge-live">LIVE</span>` : `<span class="badge badge-ended">انتهت</span>`);
+                
+                listDiv.innerHTML += `
+                    <div class="item">
+                        <div class="item-info">
+                            <b style="font-size:16px; color:#fff;">${m.team1Name} 🆚 ${m.team2Name}</b>
+                            <p style="font-size:13px; opacity:0.6; margin-top:4px;">البطولة: ${m.tournament} | المعلق: ${m.commentator || 'غير محدد'}</p>
+                            ${badge}
+                            <div class="actions">
+                                <span onclick="editMatchItem('${m.id}')" style="color:var(--blue); cursor:pointer; font-weight:bold;">📝 تعديل</span>
+                                <span onclick="deleteItemUnit('${m.id}')" style="color:var(--danger); cursor:pointer; font-weight:bold;">🗑️ حذف</span>
+                                <span onclick="moveOrderUp(${idx})" style="color:var(--gold); cursor:pointer; font-weight:bold;">⬆️ رفع الترتيب</span>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        } else {
+            if(database.channels.length === 0) listDiv.innerHTML = '<p style="text-align:center;opacity:0.5;padding:20px;">لا توجد قنوات مضافة حالياً.</p>';
+            database.channels.forEach((c, idx) => {
+                listDiv.innerHTML += `
+                    <div class="item">
+                        <img src="${c.logo || 'https://cdn-icons-png.flaticon.com/512/725/725298.png'}" style="width:50px; height:50px; border-radius:6px; object-fit:contain; background:#000; padding:4px;">
+                        <div class="item-info">
+                            <b style="font-size:16px;">${c.name}</b>
+                            <p style="font-size:12px; color:var(--gold);">${c.type} - ${c.quality} [${c.status || 'نشطة'}]</p>
+                            <div class="actions">
+                                <span onclick="editChannelItem('${c.id}')" style="color:var(--blue); cursor:pointer; font-weight:bold;">📝 تعديل</span>
+                                <span onclick="deleteItemUnit('${c.id}')" style="color:var(--danger); cursor:pointer; font-weight:bold;">🗑️ حذف</span>
+                                <span onclick="moveOrderUp(${idx})" style="color:var(--gold); cursor:pointer; font-weight:bold;">⬆️ رفع الترتيب</span>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+    }
+
+    function openDynamicForm() {
+        document.getElementById('editId').value = '';
+        document.getElementById('m-time').value = '';
+        document.getElementById('form-title').innerText = currentMode === 'matches' ? "إضافة مباراة استراتيجية جديدة" : "إضافة قناة ناقلة للمنصة";
+        
+        document.getElementById('match-fields').style.display = currentMode === 'matches' ? 'block' : 'none';
+        document.getElementById('channel-fields').style.display = currentMode === 'channels' ? 'block' : 'none';
+        
+        // تنظيف المدخلات
+        if(currentMode === 'matches') {
+            document.getElementById('m-team1').value = ''; document.getElementById('m-team2').value = '';
+            document.getElementById('m-team1Logo').value = ''; document.getElementById('m-team2Logo').value = '';
+            document.getElementById('m-tournament').value = ''; document.getElementById('m-url').value = '';
+            document.getElementById('m-stadium').value = ''; document.getElementById('m-commentator').value = '';
+            document.getElementById('m-lineup1').value = ''; document.getElementById('m-lineup2').value = '';
+            manageStatusDropdown();
+        } else {
+            document.getElementById('c-name').value = ''; document.getElementById('c-logo').value = '';
+            document.getElementById('c-url').value = '';
+        }
+
+        showScreen('screen-form');
+    }
+
+    function editMatchItem(id) {
+        const item = database.matches.find(m => m.id === id);
+        openDynamicForm();
+        document.getElementById('editId').value = item.id;
+        document.getElementById('m-team1').value = item.team1Name;
+        document.getElementById('m-team2').value = item.team2Name;
+        document.getElementById('m-team1Logo').value = item.team1Logo;
+        document.getElementById('m-team2Logo').value = item.team2Logo;
+        document.getElementById('m-tournament').value = item.tournament;
+        document.getElementById('m-url').value = item.url;
+        document.getElementById('m-stadium').value = item.stadium || '';
+        document.getElementById('m-commentator').value = item.commentator || '';
+        document.getElementById('m-time').value = item.time || '';
+        document.getElementById('m-status').value = item.status || 'live';
+        
+        document.getElementById('m-lineup1').value = item.team1Lineup ? item.team1Lineup.join('\n') : '';
+        document.getElementById('m-lineup2').value = item.team2Lineup ? item.team2Lineup.join('\n') : '';
+        
+        document.getElementById('form-title').innerText = "تعديل بيانات المباراة 📝";
+        manageStatusDropdown();
+    }
+
+    function editChannelItem(id) {
+        const item = database.channels.find(c => c.id === id);
+        openDynamicForm();
+        document.getElementById('editId').value = item.id;
+        document.getElementById('c-name').value = item.name;
+        document.getElementById('c-logo').value = item.logo;
+        document.getElementById('c-url').value = item.url;
+        document.getElementById('c-type').value = item.type;
+        document.getElementById('c-quality').value = item.quality;
+        document.getElementById('form-title').innerText = "تعديل بيانات القناة 📺";
+    }
+
+    function manageStatusDropdown() {
+        const timeVal = document.getElementById('m-time').value.trim();
+        document.getElementById('status-wrapper').style.opacity = timeVal !== "" ? "0.3" : "1";
+        document.getElementById('m-status').disabled = timeVal !== "";
+    }
+
+    // حفظ محتوى المربع الشفاف (الإشعار المتقدم)
+    async function saveGlobalNotice() {
+        database.notification = {
+            title: document.getElementById('p-notice-title').value.trim(),
+            image: document.getElementById('p-notice-img').value.trim(),
+            link: document.getElementById('p-notice-link').value.trim()
+        };
+        await syncDataToGithub("تحديث بيانات الإشعار المربع الشفاف العلوي");
+    }
+
+    // حفظ أو تعديل المباريات والقنوات بشكل ديناميكي كامل متوافق مع الـ JSON المقترح
+    async function saveDynamicData() {
+        const editId = document.getElementById('editId').value;
+        
+        if(currentMode === 'matches') {
+            const timeVal = document.getElementById('m-time').value.trim();
+            const lineup1Array = document.getElementById('m-lineup1').value.split('\n').map(l => l.trim()).filter(l => l !== "");
+            const lineup2Array = document.getElementById('m-lineup2').value.split('\n').map(l => l.trim()).filter(l => l !== "");
+
+            const matchObj = {
+                id: editId ? editId : 'match_' + Date.now(),
+                team1Name: document.getElementById('m-team1').value.trim(),
+                team2Name: document.getElementById('m-team2').value.trim(),
+                team1Logo: document.getElementById('m-team1Logo').value.trim(),
+                team2Logo: document.getElementById('m-team2Logo').value.trim(),
+                tournament: document.getElementById('m-tournament').value.trim(),
+                url: document.getElementById('m-url').value.trim(),
+                stadium: document.getElementById('m-stadium').value.trim(),
+                referee: "حكم دولي نُخبة",
+                commentator: document.getElementById('m-commentator').value.trim(),
+                quality: "FHD",
                 time: timeVal,
-                status: (timeVal !== "") ? "" : document.getElementById("m-status").value
+                status: timeVal !== "" ? "" : document.getElementById('m-status').value,
+                team1Lineup: lineup1Array,
+                team2Lineup: lineup2Array
             };
 
-            if(id) {
-                const idx = database.matches.findIndex(m => m.id === id);
-                if(idx !== -1) database.matches[idx] = matchObject;
+            if(!matchObj.team1Name || !matchObj.team2Name || !matchObj.url) return alert("برجاء إدخال الحقول الإلزامية للمباراة.");
+
+            if(editId) {
+                const idx = database.matches.findIndex(m => m.id === editId);
+                if(idx !== -1) database.matches[idx] = matchObj;
             } else {
-                database.matches.push(matchObject);
+                database.matches.push(matchObj);
             }
-
-            hideModal("match-modal");
-            await pushDatabaseToGithub(`المباريات: حفظ وإجراء التعديل على المباراة ${matchObject.team1} ضد ${matchObject.team2}`);
-        }
-
-        async function deleteMatchItem(id) {
-            database.matches = database.matches.filter(m => m.id !== id);
-            await pushDatabaseToGithub(`المباريات: حذف المباراة ذات المعرف [${id}]`);
-        }
-
-        async function cloneMatchItem(id) {
-            const target = database.matches.find(m => m.id === id);
-            if(!target) return;
-            const cloned = { ...target, id: 'match_' + Date.now() };
-            database.matches.push(cloned);
-            await pushDatabaseToGithub(`المباريات: استنساخ عنصر مباراة جديدة من [${target.team1}]`);
-        }
-
-        // ==========================================
-        // منطقيات وإجراءات قسم القنوات (CRUD)
-        // ==========================================
-        function triggerChannelModal() {
-            document.getElementById("channel-modal-title").innerText = "إضافة قناة جديدة";
-            document.getElementById("channel-form").reset();
-            document.getElementById("channel-id").value = "";
-            showModal("channel-modal");
-        }
-
-        function editChannelItem(id) {
-            const item = database.channels.find(c => c.id === id);
-            if(!item) return;
-            document.getElementById("channel-modal-title").innerText = "تعديل بيانات القناة";
-            document.getElementById("channel-id").value = item.id;
-            document.getElementById("c-name").value = item.name;
-            document.getElementById("c-logo").value = item.logo;
-            document.getElementById("c-url").value = item.url;
-            document.getElementById("c-type").value = item.type;
-            document.getElementById("c-quality").value = item.quality;
-            document.getElementById("c-status").value = item.status;
-            showModal("channel-modal");
-        }
-
-        async function commitChannelForm(e) {
-            e.preventDefault();
-            const id = document.getElementById("channel-id").value;
-            
-            const channelObject = {
-                id: id ? id : 'channel_' + Date.now(),
-                name: document.getElementById("c-name").value.trim(),
-                logo: document.getElementById("c-logo").value.trim(),
-                url: document.getElementById("c-url").value.trim(),
-                type: document.getElementById("c-type").value,
-                quality: document.getElementById("c-quality").value,
-                status: document.getElementById("c-status").value
+        } else {
+            const channelObj = {
+                id: editId ? editId : 'channel_' + Date.now(),
+                name: document.getElementById('c-name').value.trim(),
+                logo: document.getElementById('c-logo').value.trim(),
+                url: document.getElementById('c-url').value.trim(),
+                type: document.getElementById('c-type').value,
+                quality: document.getElementById('c-quality').value,
+                status: "نشطة"
             };
 
-            if(id) {
-                const idx = database.channels.findIndex(c => c.id === id);
-                if(idx !== -1) database.channels[idx] = channelObject;
+            if(!channelObj.name || !channelObj.url) return alert("برجاء إدخال الحقول الإلزامية للقناة.");
+
+            if(editId) {
+                const idx = database.channels.findIndex(c => c.id === editId);
+                if(idx !== -1) database.channels[idx] = channelObj;
             } else {
-                database.channels.push(channelObject);
+                database.channels.push(channelObj);
             }
-
-            hideModal("channel-modal");
-            await pushDatabaseToGithub(`القنوات: حفظ وإجراء التعديل على القناة [${channelObject.name}]`);
         }
 
-        async function deleteChannelItem(id) {
-            database.channels = database.channels.filter(c => c.id !== id);
-            await pushDatabaseToGithub(`القنوات: حذف القناة ذات المعرف [${id}]`);
-        }
+        showScreen('screen-items');
+        renderItemsList();
+        await syncDataToGithub(`حفظ وتحديث حزمة في قسم ${currentMode}`);
+    }
 
-        async function cloneChannelItem(id) {
-            const target = database.channels.find(c => c.id === id);
-            if(!target) return;
-            const cloned = { ...target, id: 'channel_' + Date.now() };
-            database.channels.push(cloned);
-            await pushDatabaseToGithub(`القنوات: استنساخ عنصر قناة جديدة للمنصة باسم [${target.name}]`);
+    async function deleteItemUnit(id) {
+        if(confirm("هل أنت متأكد من الحذف النهائي لهذا العنصر سحابياً؟")) {
+            if(currentMode === 'matches') database.matches = database.matches.filter(m => m.id !== id);
+            else database.channels = database.channels.filter(c => c.id !== id);
+            renderItemsList();
+            await syncDataToGithub(`حذف عنصر من معرف ${id}`);
         }
+    }
 
-        // ==========================================
-        // دالة حفظ الترتيب وتحريك العناصر للأعلى
-        // ==========================================
-        async function moveElementUp(arrayKey, index) {
-            if (index === 0) {
-                makeNotification("العنصر موجود بالفعل في المقدمة.", "error");
-                return;
-            }
-            const list = database[arrayKey];
-            // تبديل الأماكن في المصفوفة لتغيير الترتيب تصاعدياً
-            const targetElement = list[index];
-            list[index] = list[index - 1];
-            list[index - 1] = targetElement;
-            
-            await pushDatabaseToGithub(`الترتيب: إعادة ترتيب وحفظ مصفوفة ${arrayKey === 'matches' ? 'المباريات' : 'القنوات'}`);
+    async function moveOrderUp(index) {
+        if(index === 0) return;
+        const targetList = currentMode === 'matches' ? database.matches : database.channels;
+        const temp = targetList[index];
+        targetList[index] = targetList[index - 1];
+        targetList[index - 1] = temp;
+        renderItemsList();
+        await syncDataToGithub(`تعديل ترتيب العناصر داخل مصفوفة ${currentMode}`);
+    }
+
+    // الرفع والمزامنة المباشرة مع مستودع الـ GitHub وإجراء التحديث لـ SHA تلقائياً
+    async function syncDataToGithub(commitMsg) {
+        showLoader(true, "جاري إرسال البيانات وعمل الـ Commit لـ GitHub...");
+        try {
+            const content64 = btoa(unescape(encodeURIComponent(JSON.stringify(database, null, 2))));
+            const payload = { message: commitMsg, content: content64 };
+            if(config.sha) payload.sha = config.sha;
+
+            const res = await fetch(`https://api.github.com/repos/${config.repo}/contents/data.json`, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${config.token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if(!res.ok) throw new Error("فشلت المزامنة السحابية الحية.");
+            const resData = await res.json();
+            config.sha = resData.content.sha;
+        } catch (e) {
+            alert("حدث خطأ في الرفع: " + e.message);
+        } finally {
+            showLoader(false);
         }
-    </script>
+    }
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+        document.getElementById(id).classList.add('active-screen');
+        document.getElementById('backBtn').style.display = (id === 'screen-home' || id === 'screen-login') ? 'none' : 'block';
+    }
+
+    function goBack() {
+        const activeId = document.querySelector('.active-screen').id;
+        if(activeId === 'screen-items') showScreen('screen-home');
+        else if(activeId === 'screen-form') showScreen('screen-items');
+    }
+</script>
+
 </body>
 </html>
