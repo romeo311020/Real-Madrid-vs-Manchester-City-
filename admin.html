@@ -227,9 +227,8 @@
 <script>
     let database = { notification: { title: '', image: '', link: '' }, matches: [], channels: [] };
     let config = { token: '', repo: '', sha: '' };
-    let currentMode = ''; // ترمز لـ matches أو channels
+    let currentMode = '';
 
-    // الفحص التلقائي المسجل في الكوكيز أو التخزين المحلي لسرعة الدخول
     document.addEventListener("DOMContentLoaded", () => {
         const savedToken = localStorage.getItem("lm_token");
         const savedRepo = localStorage.getItem("lm_repo");
@@ -245,7 +244,6 @@
         document.getElementById('loader').style.display = visible ? 'flex' : 'none';
     }
 
-    // دالة الدخول الذكية: تقوم بالتحقق الفعلي من مستودع الـ GitHub وإذا كان الخطأ حقيقي توقف الدخول فوراً
     async function loginToPlatform(isAuto = false) {
         config.token = document.getElementById('token').value.trim();
         config.repo = document.getElementById('repo').value.trim();
@@ -254,26 +252,30 @@
         
         showLoader(true, "جاري فحص الصلاحيات والاتصال بالمستودع الفعلي...");
         try {
-            // فحص صلاحية التوكن والـ repo من خلال طلب رسمي لـ GitHub API
+            // تصحيح صياغة الـ Authorization لتكون Bearer وهي الطريقة القياسية لـ GitHub API
             const checkRes = await fetch(`https://api.github.com/repos/${config.repo}`, {
-                headers: { 'Authorization': `token ${config.token}` }
+                headers: { 
+                    'Authorization': `Bearer ${config.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
             });
             
             if(!checkRes.ok) {
                 throw new Error("بيانات الاتصال غير صحيحة أو التوكن منتهي! يرجى التأكد من البيانات.");
             }
 
-            // تخزين البيانات محلياً بعد التأكد من صحتها تماماً
             localStorage.setItem("lm_token", config.token);
             localStorage.setItem("lm_repo", config.repo);
 
-            // جلب ملف البيانات
             const res = await fetch(`https://api.github.com/repos/${config.repo}/contents/data.json`, {
-                headers: { 'Authorization': `token ${config.token}`, 'Cache-Control': 'no-cache' }
+                headers: { 
+                    'Authorization': `Bearer ${config.token}`, 
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Cache-Control': 'no-cache' 
+                }
             });
             
             if (res.status === 404) {
-                // تأسيس وتشييد الملف إذا لم يكن موجوداً
                 database = { notification: { title: '', image: '', link: '' }, matches: [], channels: [] };
                 config.sha = '';
                 await syncDataToGithub("تأسيس قاعدة بيانات لايف ماتش الافتراضية");
@@ -282,12 +284,10 @@
                 config.sha = file.sha;
                 database = JSON.parse(decodeURIComponent(escape(atob(file.content))));
                 
-                // التأكد من مصفوفات النظام لحمايتها من الانهيار
                 if(!database.notification) database.notification = { title: '', image: '', link: '' };
                 if(!database.matches) database.matches = [];
                 if(!database.channels) database.channels = [];
 
-                // تعبئة حقول الإشعار الترويجي في الصفحة الرئيسية للوحة
                 document.getElementById('p-notice-title').value = database.notification.title || "";
                 document.getElementById('p-notice-img').value = database.notification.image || "";
                 document.getElementById('p-notice-link').value = database.notification.link || "";
@@ -321,7 +321,6 @@
         showScreen('screen-items');
     }
 
-    // بناء وتحديث عرض العناصر حسب الأقسام والتوافق مع التعديلات
     function renderItemsList() {
         const listDiv = document.getElementById('items-list');
         listDiv.innerHTML = '';
@@ -374,7 +373,6 @@
         document.getElementById('match-fields').style.display = currentMode === 'matches' ? 'block' : 'none';
         document.getElementById('channel-fields').style.display = currentMode === 'channels' ? 'block' : 'none';
         
-        // تنظيف المدخلات
         if(currentMode === 'matches') {
             document.getElementById('m-team1').value = ''; document.getElementById('m-team2').value = '';
             document.getElementById('m-team1Logo').value = ''; document.getElementById('m-team2Logo').value = '';
@@ -430,7 +428,6 @@
         document.getElementById('m-status').disabled = timeVal !== "";
     }
 
-    // حفظ محتوى المربع الشفاف (الإشعار المتقدم)
     async function saveGlobalNotice() {
         database.notification = {
             title: document.getElementById('p-notice-title').value.trim(),
@@ -440,7 +437,6 @@
         await syncDataToGithub("تحديث بيانات الإشعار المربع الشفاف العلوي");
     }
 
-    // حفظ أو تعديل المباريات والقنوات بشكل ديناميكي كامل متوافق مع الـ JSON المقترح
     async function saveDynamicData() {
         const editId = document.getElementById('editId').value;
         
@@ -520,7 +516,6 @@
         await syncDataToGithub(`تعديل ترتيب العناصر داخل مصفوفة ${currentMode}`);
     }
 
-    // الرفع والمزامنة المباشرة مع مستودع الـ GitHub وإجراء التحديث لـ SHA تلقائياً
     async function syncDataToGithub(commitMsg) {
         showLoader(true, "جاري إرسال البيانات وعمل الـ Commit لـ GitHub...");
         try {
@@ -530,7 +525,11 @@
 
             const res = await fetch(`https://api.github.com/repos/${config.repo}/contents/data.json`, {
                 method: 'PUT',
-                headers: { 'Authorization': `token ${config.token}`, 'Content-Type': 'application/json' },
+                headers: { 
+                    'Authorization': `Bearer ${config.token}`, 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
                 body: JSON.stringify(payload)
             });
 
