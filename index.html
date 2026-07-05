@@ -1036,5 +1036,359 @@
         }
     }
 </script>
+<style>
+    /* 1. نظام الإشعار الشفاف الفاخر (تحت أزرار الهيرو مباشرة) */
+    .premium-notice-banner {
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 16px;
+        padding: 15px;
+        text-align: center;
+        margin: 25px auto 0 auto;
+        max-width: 600px;
+        display: none; /* يظهر فقط لو فيه بيانات من لوحة التحكم */
+        text-decoration: none;
+        color: inherit;
+        transition: var(--transition-premium);
+    }
+    .premium-notice-banner:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+    .premium-notice-banner img {
+        width: 100%;
+        max-height: 220px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 12px;
+    }
+    .premium-notice-banner h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--text-white);
+    }
+
+    /* 2. إعادة إحياء وتعديل صفحة المشاهدة الداخلية السينمائية */
+    .watch-grid {
+        display: grid !important; /* إلغاء التعديل القديم وجعله متجاوب */
+        grid-template-columns: 2fr 1fr !important;
+        gap: 25px !important;
+        max-width: 1100px !important;
+        margin: 100px auto 40px auto !important;
+    }
+    .watch-grid .glass-card {
+        display: block !important; /* إعادة إظهار الصناديق */
+    }
+    
+    /* أزرار التنقل الداخلية للمباراة (مشغل - تشكيلة - قنوات) */
+    .match-sub-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .sub-tab-btn {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text-gray);
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition-premium);
+    }
+    .sub-tab-btn.active {
+        background: #ffffff;
+        color: #000000;
+        border-color: #ffffff;
+    }
+
+    /* التحكم في إظهار وإخفاء محتويات التابات */
+    .inner-tab-content { display: none; }
+    .inner-tab-content.active { display: block; }
+
+    /* ستايل قائمة التشكيلة على نظام الكرت المرتب مع اللوجو */
+    .premium-lineup-container {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 12px;
+        padding: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .tactical-player-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 5px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    }
+    .tactical-player-row:last-child { border-bottom: none; }
+    .t-p-name { font-weight: 600; font-size: 0.88rem; color: var(--text-white); }
+    .t-p-pos { font-size: 0.75rem; color: var(--text-gray); }
+    
+    /* لوجو الموقع المائي أسفل التشكيلة */
+    .lineup-watermark {
+        display: block;
+        width: 100px;
+        margin: 20px auto 0 auto;
+        opacity: 0.4;
+        transition: var(--transition-premium);
+    }
+    .lineup-watermark:hover { opacity: 0.8; }
+
+    .btn-back-match {
+        background: rgba(255,255,255,0.05);
+        color: #fff;
+        border: 1px solid var(--card-border);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        margin-bottom: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    @media (max-width: 992px) {
+        .watch-grid { grid-template-columns: 1fr !important; }
+    }
+</style>
+
+<script>
+    // عند تحميل الصفحة بالكامل، نقوم بحقن العناصر الجديدة برمجياً لتجنب تخريب بنية الـ HTML الأساسية
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. حقن الإشعار الشفاف في الصفحة الرئيسية أسفل أزرار الـ Hero
+        const heroActionDiv = document.querySelector(".cinematic-hero div");
+        if (heroActionDiv) {
+            const noticeHTML = `
+                <a href="#" id="app-global-notice" class="premium-notice-banner glass-card">
+                    <img src="" id="app-notice-img" alt="Notice">
+                    <h3 id="app-notice-title"></h3>
+                </a>
+            `;
+            heroActionDiv.insertAdjacentHTML('afterend', noticeHTML);
+        }
+
+        // 2. إعادة هيكلة وتحديث صندوق صفحة المشاهدة (Watch Page) بالكامل
+        const watchPageSection = document.getElementById("watch-page");
+        if (watchPageSection) {
+            watchPageSection.innerHTML = `
+                <div class="watch-grid">
+                    <div>
+                        <button class="btn-back-match" onclick="triggerPageNavigation('matches-page')">
+                            <i class="fa-solid fa-arrow-right"></i> رجوع للمباريات
+                        </button>
+                        
+                        <div class="video-player-wrapper">
+                            <div id="html5-premium-player">
+                                <video id="plyr-core-video" playsinline controls crossorigin></video>
+                            </div>
+                            <div id="stream-empty-alert" class="stream-alert hidden">
+                                <i class="fa-solid fa-circle-exclamation" style="font-size: 2rem; color: var(--text-gray);"></i>
+                                <p style="font-size:1.1rem; font-weight:800; margin-top:12px; margin-bottom:0;">البث غير متاح حالياً.</p>
+                            </div>
+                        </div>
+
+                        <div class="match-sub-tabs">
+                            <button class="sub-tab-btn active" onclick="switchMatchTab('player-tab')"><i class="fa-solid fa-play"></i> زر المشغل</button>
+                            <button class="sub-tab-btn" onclick="switchMatchTab('lineup-tab')"><i class="fa-solid fa-users"></i> زر التشكيلة</button>
+                            <button class="sub-tab-btn" onclick="switchMatchTab('channels-tab')"><i class="fa-solid fa-satellite-dish"></i> القنوات الناقلة</button>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="padding: 25px; height: fit-content;">
+                        <div id="inner-player-tab" class="inner-tab-content active">
+                            <h2 id="w-match-name" style="font-size:1.2rem; font-weight:800; margin: 0 0 5px 0;">-</h2>
+                            <p style="color:var(--text-gray); margin: 0 0 20px 0; font-size: 0.8rem;" id="w-tournament">-</p>
+                            <div style="display:flex; flex-direction:column; gap: 12px; font-size:0.85rem; color:var(--text-light-gray);">
+                                <p style="margin:0;"><i class="fa-solid fa-location-dot" style="margin-left:5px;"></i> الملعب: <span id="w-stadium" style="color:#fff; font-weight: 600;">-</span></p>
+                                <p style="margin:0;"><i class="fa-solid fa-user-shield" style="margin-left:5px;"></i> الحكم: <span id="w-referee" style="color:#fff; font-weight: 600;">-</span></p>
+                                <p style="margin:0;"><i class="fa-solid fa-microphone" style="margin-left:5px;"></i> المعلق: <span id="w-commentator" style="color:#fff; font-weight: 600;">-</span></p>
+                                <p style="margin:0;"><i class="fa-solid fa-signal" style="margin-left:5px;"></i> الجودة: <span id="w-quality" style="color:#fff; font-weight: 600;">-</span></p>
+                            </div>
+                        </div>
+
+                        <div id="inner-lineup-tab" class="inner-tab-content">
+                            <div style="display: flex; flex-direction:column; gap: 20px;">
+                                <div>
+                                    <h4 id="w-team1-title" style="font-weight:800; margin: 0 0 10px 0; font-size: 0.9rem; color:var(--text-gray);"></h4>
+                                    <div class="premium-lineup-container" id="w-team1-players-list"></div>
+                                </div>
+                                <div>
+                                    <h4 id="w-team2-title" style="font-weight:800; margin: 0 0 10px 0; font-size: 0.9rem; color:var(--text-gray);"></h4>
+                                    <div class="premium-lineup-container" id="w-team2-players-list"></div>
+                                </div>
+                            </div>
+                            <img src="https://i.postimg.cc/XqRZSY1q/file-000000005be471f4bce25565fa31730c.png" class="lineup-watermark" alt="Live Match">
+                        </div>
+
+                        <div id="inner-channels-tab" class="inner-tab-content">
+                            <h4 style="font-weight:800; margin: 0 0 12px 0; font-size: 0.9rem;">القنوات والناقل الحصري:</h4>
+                            <div id="w-match-channels-list" style="font-size:0.85rem; color:var(--text-light-gray);"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    // دالة تبديل التابات الفرعية بسلاسة
+    function switchMatchTab(tabId) {
+        document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.inner-tab-content').forEach(content => content.classList.remove('active'));
+
+        // تحديد الزر المحفز وتنشيطه
+        const activeBtn = event.currentTarget;
+        if(activeBtn) activeBtn.classList.add('active');
+
+        if(tabId === 'player-tab') document.getElementById('inner-player-tab').classList.add('active');
+        if(tabId === 'lineup-tab') document.getElementById('inner-lineup-tab').classList.add('active');
+        if(tabId === 'channels-tab') document.getElementById('inner-channels-tab').classList.add('active');
+    }
+
+    // تطوير دالة استهلاك جلب البيانات لتدعم التشكيلات والإشعارات بشكل كامل ومطوّر
+    const originalFetchDatabase = window.fetchGlobalDatabase;
+    window.fetchGlobalDatabase = function() {
+        fetch('data.json')
+            .then(res => res.json())
+            .then(data => {
+                window.database = data;
+                
+                // تشغيل ومعالجة الإشعار الشفاف أول الدخول
+                const noticeBanner = document.getElementById("app-global-notice");
+                if (noticeBanner && data.notification) {
+                    if (data.notification.image && data.notification.image.trim() !== "") {
+                        document.getElementById("app-notice-img").src = data.notification.image;
+                        document.getElementById("app-notice-title").innerText = data.notification.title || "";
+                        
+                        if (data.notification.link && data.notification.link.trim() !== "") {
+                            noticeBanner.href = data.notification.link;
+                            noticeBanner.style.cursor = "pointer";
+                        } else {
+                            noticeBanner.removeAttribute('href');
+                            noticeBanner.style.cursor = "default";
+                        }
+                        noticeBanner.style.display = "block";
+                    }
+                }
+
+                // تمرير معالجة الكروت للمحرك الأساسي
+                if(typeof renderMatchesEngine === 'function') renderMatchesEngine(data.matches);
+                if(typeof renderChannelsEngine === 'function') renderChannelsEngine(data.channels);
+                if(typeof renderFavoritesEngine === 'function') renderFavoritesEngine();
+            })
+            .catch(err => {
+                console.error("Custom Fetch Error:", err);
+            });
+    };
+
+    // تطوير نظام تشغيل المباريات لملء التباديل الجديدة (التشكيلة التكتيكية والقنوات)
+    window.bootLivePlayer = function(id) {
+        const item = window.database.matches.find(m => m.id === id);
+        if(!item) return;
+        triggerPageNavigation("watch-page");
+        
+        // العودة لتاب المشغل تلقائياً عند فتح أي مباراة جديدة
+        document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.inner-tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelector(".sub-tab-btn").classList.add('active');
+        document.getElementById('inner-player-tab').classList.add('active');
+
+        // تعبئة البيانات العامة
+        document.getElementById("w-match-name").innerText = `${item.team1Name} ضد ${item.team2Name}`;
+        document.getElementById("w-tournament").innerText = item.tournament;
+        document.getElementById("w-stadium").innerText = item.stadium || "غير محدد";
+        document.getElementById("w-referee").innerText = item.referee || "غير محدد";
+        document.getElementById("w-commentator").innerText = item.commentator || "غير محدد";
+        document.getElementById("w-quality").innerText = item.quality || "تلقائية";
+
+        // حقن التشكيلة المرتبة بدقة (الاسم وتحته المركز بخط رفيع)
+        document.getElementById("w-team1-title").innerText = item.team1Name;
+        const team1Container = document.getElementById("w-team1-players-list");
+        if(item.team1Lineup && item.team1Lineup.length > 0) {
+            team1Container.innerHTML = item.team1Lineup.map(p => {
+                const parts = p.split('-'); // نفصل الاسم عن المركز إذا تم كتابته كـ "محمد الشناوي - حارس مرمى"
+                const name = parts[0] ? parts[0].trim() : p;
+                const pos = parts[1] ? parts[1].trim() : "لاعب";
+                return `<div class="tactical-player-row"><span class="t-p-name">${name}</span><span class="t-p-pos">${pos}</span></div>`;
+            }).join('');
+        } else {
+            team1Container.innerHTML = '<p style="font-size:0.75rem; color:var(--text-gray); margin:0;">التشكيلة الرسمية غير متوفرة حالياً.</p>';
+        }
+
+        document.getElementById("w-team2-title").innerText = item.team2Name;
+        const team2Container = document.getElementById("w-team2-players-list");
+        if(item.team2Lineup && item.team2Lineup.length > 0) {
+            team2Container.innerHTML = item.team2Lineup.map(p => {
+                const parts = p.split('-');
+                const name = parts[0] ? parts[0].trim() : p;
+                const pos = parts[1] ? parts[1].trim() : "لاعب";
+                return `<div class="tactical-player-row"><span class="t-p-name">${name}</span><span class="t-p-pos">${pos}</span></div>`;
+            }).join('');
+        } else {
+            team2Container.innerHTML = '<p style="font-size:0.75rem; color:var(--text-gray); margin:0;">التشكيلة الرسمية غير متوفرة حالياً.</p>';
+        }
+
+        // قنوات البث الناقلة للمباراة
+        const channelsList = document.getElementById("w-match-channels-list");
+        if (channelsList) {
+            channelsList.innerHTML = `<p><i class="fa-solid fa-headset" style="margin-left:5px;"></i> صوتية البث: ${item.commentator || 'القناة الصوتية الأولى'}</p>`;
+        }
+
+        if(typeof attachMediaSource === 'function') attachMediaSource(item.url);
+    };
+
+    // تطوير طريقة عرض كروت المباريات بالصفحة الرئيسية لتطابق خياراتك الثلاثة (LIVE، وقت، انتهت)
+    window.renderMatchesEngine = function(data) {
+        const grid = document.getElementById("matches-grid");
+        if (!grid) return;
+        if(!data || data.length === 0) {
+            grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--text-gray); font-size:0.85rem;">لا توجد مباريات حالياً.</p>`;
+            return;
+        }
+        grid.innerHTML = data.map(m => {
+            const isFav = favoritesList.includes(m.id) ? 'fa-solid' : 'fa-regular';
+            let actionBadge = '';
+            
+            // الفلترة الذكية للحالات الثلاثة (LIVE، انتهت، أو الوقت المتبقي)
+            if(m.status === 'live') {
+                actionBadge = `<span class="badge-live" style="background:#ff0000; color:#fff;">LIVE</span>`;
+            } else if(m.status === 'ended') {
+                actionBadge = `<span class="vs-badge" style="background:rgba(255,255,255,0.02); color:var(--text-gray);">انتهت</span>`;
+            } else {
+                actionBadge = `<span class="timer-countdown" data-countdown="${m.time}">${m.time || '10:00 AM'}</span>`;
+            }
+
+            return `
+                <div class="match-card glass-card">
+                    <div style="position: absolute; left: 15px; top: 15px; font-size:1rem; cursor:pointer; z-index:10;" onclick="toggleFavoriteItem('${m.id}')">
+                        <i class="${isFav} fa-heart" style="color: #fff;"></i>
+                    </div>
+                    <div class="match-teams">
+                        <div class="team-box">
+                            <img src="${m.team1Logo}" class="team-logo" loading="lazy" alt="logo">
+                            <span class="team-name">${m.team1Name}</span>
+                        </div>
+                        <span class="vs-badge">VS</span>
+                        <div class="team-box">
+                            <img src="${m.team2Logo}" class="team-logo" loading="lazy" alt="logo">
+                            <span class="team-name">${m.team2Name}</span>
+                        </div>
+                    </div>
+                    <div class="match-details" style="text-align: center; margin-bottom: 15px;">
+                        <div class="tournament-name">${m.tournament}</div>
+                        <div style="margin-top:8px;">${actionBadge}</div>
+                    </div>
+                    <button class="btn-premium" style="width:100%;" onclick="bootLivePlayer('${m.id}')">مشاهدة الحدث</button>
+                </div>
+            `;
+        }).join('');
+        if(typeof startTimersEngine === 'function') startTimersEngine();
+    };
+</script>
 </body>
 </html>
