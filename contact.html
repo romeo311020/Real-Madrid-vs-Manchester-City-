@@ -7,49 +7,95 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* --- المظهر والهوية البصرية المتناسقة --- */
         :root[data-theme="dark"] {
-            --bg-base: #0a0a0c; --bg-surface: #121216; --border-color: rgba(255, 255, 255, 0.06);
-            --text-main: #f3f4f6; --text-muted: #9ca3af; --accent: #3b82f6;
+            --bg-base: #0a0a0c;
+            --bg-surface: #121216;
+            --bg-surface-hover: #1a1a22;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.15);
         }
         :root[data-theme="light"] {
-            --bg-base: #f8f9fa; --bg-surface: #ffffff; --border-color: rgba(0, 0, 0, 0.06);
-            --text-main: #1a1a1e; --text-muted: #6c757d; --accent: #228be6;
+            --bg-base: #f8f9fa;
+            --bg-surface: #ffffff;
+            --bg-surface-hover: #f1f3f5;
+            --border-color: rgba(0, 0, 0, 0.06);
+            --text-main: #1a1a1e;
+            --text-muted: #6c757d;
+            --accent: #228be6;
+            --accent-glow: rgba(34, 139, 230, 0.15);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg-base); color: var(--text-main); font-size: 0.95rem; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; transition: background-color 0.3s, border-color 0.3s, color 0.2s; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-size: 0.95rem; line-height: 1.6; }
         .container { width: 90%; max-width: 1100px; margin: 0 auto; }
         
-        nav { background: var(--bg-surface); border-bottom: 1px solid var(--border-color); height: 70px; display: flex; align-items: center; }
+        /* --- الهيدر والقائمة --- */
+        nav { background: var(--bg-surface); border-bottom: 1px solid var(--border-color); height: 70px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }
         .nav-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .logo { font-weight: 800; font-size: 1.2rem; color: var(--text-main); text-decoration: none; }
-        .nav-links { display: flex; gap: 24px; list-style: none; }
-        .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 0.9rem; }
-        .nav-links a.active { color: var(--text-main); }
-        .theme-toggle { background: none; border: none; color: var(--text-main); cursor: pointer; }
+        .logo { font-weight: 800; font-size: 1.2rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent); }
+        .nav-links { display: flex; gap: 24px; align-items: center; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 0.9rem; }
+        .nav-links a:hover, .nav-links a.active { color: var(--text-main); }
+        .theme-toggle { background: none; border: none; color: var(--text-main); cursor: pointer; font-size: 1.1rem; }
 
-        .contact-wrapper { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; margin: 50px 0; }
-        @media (max-width: 768px) { .contact-wrapper { grid-template-columns: 1fr; } }
+        /* --- عنوان الصفحة والدعم الفني --- */
+        .page-header { text-align: center; padding: 50px 0 30px 0; }
+        .page-header h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; }
+        .page-header p { color: var(--text-muted); max-width: 600px; margin: 0 auto; }
         
-        .contact-info h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
-        .contact-info p { color: var(--text-muted); margin-bottom: 30px; font-size: 0.9rem; }
-        .info-item { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .info-item i { font-size: 1.1rem; color: var(--accent); }
+        .support-alert { background: var(--accent-glow); border-right: 4px solid var(--accent); padding: 15px 20px; border-radius: 8px; margin-bottom: 40px; font-size: 0.9rem; }
+
+        /* --- الهيكل الرئيسي (البطاقة والنموذج) --- */
+        .contact-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; margin-bottom: 60px; }
+        @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+
+        /* بطاقة المطور ووسائل التواصل */
+        .developer-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .dev-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 2px solid var(--border-color); }
+        .developer-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 5px; }
+        .developer-card .job { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 25px; }
         
-        .contact-form { background: var(--bg-surface); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 11px 14px; background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); outline: none; font-size: 0.9rem; }
+        .social-channels { width: 100%; border-top: 1px solid var(--border-color); padding-top: 20px; text-align: right; }
+        .channel-item { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; text-decoration: none; color: var(--text-main); font-size: 0.9rem; }
+        .channel-item i { color: #25d366; font-size: 1.2rem; }
+        .btn-visit { display: block; width: 100%; padding: 10px; background: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); text-decoration: none; border-radius: 10px; font-weight: 600; text-align: center; font-size: 0.85rem; margin-top: 10px; }
+        .btn-visit:hover { background: var(--text-main); color: var(--bg-base); }
+
+        /* نموذج التواصل */
+        .contact-form { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); outline: none; font-size: 0.9rem; }
         .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
-        .btn-send { width: 100%; padding: 12px; background: var(--text-main); color: var(--bg-base); border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .btn-submit { width: 100%; padding: 12px; background: var(--text-main); color: var(--bg-base); border: none; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
 
-        footer { border-top: 1px solid var(--border-color); padding: 30px 0; font-size: 0.85rem; color: var(--text-muted); margin-top: 80px; }
+        /* --- الأسئلة الشائعة (FAQ) --- */
+        .faq-section { margin-bottom: 60px; }
+        .faq-section h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 20px; text-align: center; }
+        .faq-item { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+        .faq-question { padding: 15px 20px; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out, padding 0.2s ease-out; color: var(--text-muted); font-size: 0.88rem; border-top: 0 solid transparent; }
+        .faq-item.active .faq-answer { max-height: 200px; padding: 15px 20px; border-top: 1px solid var(--border-color); }
+
+        /* --- الفوتر --- */
+        footer { border-top: 1px solid var(--border-color); padding: 40px 0; font-size: 0.85rem; color: var(--text-muted); margin-top: 80px; }
+        .footer-wrapper { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .footer-links { display: flex; gap: 15px; list-style: none; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; }
+        .footer-links a:hover { color: var(--text-main); }
+        .btn-back-home { padding: 6px 14px; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-main); text-decoration: none; border-radius: 6px; font-weight: 600; }
     </style>
 </head>
 <body>
 
     <nav>
         <div class="container nav-wrapper">
-            <a href="index.html" class="logo">مسارك التعليمي</a>
+            <a href="index.html" class="logo"><i class="fa-solid fa-graduation-cap"></i> مسارك التعليمي</a>
             <ul class="nav-links">
                 <li><a href="index.html">الرئيسية</a></li>
                 <li><a href="teachers.html">المدرسون</a></li>
@@ -60,47 +106,116 @@
         </div>
     </nav>
 
-    <main class="container contact-wrapper">
-        <div class="contact-info">
-            <h2>يسعدنا تواصلك معنا</h2>
-            <p>هل واجهتك مشكلة في الدخول لصفحة مدرسك؟ أو لديك استفسار تقني؟ فريق الدعم الفني متواجد لمساعدتك دائماً.</p>
-            <div class="info-item"><i class="fa-solid fa-envelope"></i> <span>support@masarak.edu</span></div>
-            <div class="info-item"><i class="fa-solid fa-phone"></i> <span>+212 600-000000</span></div>
-            <div class="info-item"><i class="fa-solid fa-location-dot"></i> <span>الدار البيضاء، المغرب</span></div>
+    <main class="container">
+        <div class="page-header">
+            <h1>تواصل معنا</h1>
+            <p>نحن هنا للإجابة على جميع استفساراتكم ومساعدتكم في أي وقت.</p>
         </div>
 
-        <form class="contact-form" onsubmit="event.preventDefault(); alert('تم إرسال رسالتك لفريق الدعم بنجاح!');">
-            <div class="form-group">
-                <label>الاسم الكامل</label>
-                <input type="text" required placeholder="أدخل اسمك">
+        <div class="support-alert">
+            <strong>الدعم الفني:</strong> إذا واجهتك أي مشكلة أثناء استخدام المنصة، يمكنك التواصل معنا عبر واتساب أو من خلال نموذج التواصل، وسنرد عليك في أقرب وقت ممكن.
+        </div>
+
+        <div class="contact-grid">
+            <section class="developer-card">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200" class="dev-img" alt="روماني جرجس">
+                <h3>روماني جرجس</h3>
+                <p class="job">مطور ومصمم منصة مسارك التعليمي</p>
+                
+                <div class="social-channels">
+                    <a href="https://wa.me/201027675035" class="channel-item" target="_blank">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>واتساب: 01027675035</span>
+                    </a>
+                    <a href="https://romeo311020.github.io/Romany-Profile/" class="btn-visit" target="_blank">زيارة موقع المطور</a>
+                </div>
+            </section>
+
+            <section class="contact-form">
+                <form onsubmit="event.preventDefault(); alert('تم إرسال رسالتك بنجاح! سيرد عليك المطور في أقرب وقت.');">
+                    <div class="form-group">
+                        <label>الاسم بالكامل</label>
+                        <input type="text" required placeholder="أدخل اسمك الثلاثي">
+                    </div>
+                    <div class="form-group">
+                        <label>البريد الإلكتروني</label>
+                        <input type="email" required placeholder="name@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>عنوان الرسالة</label>
+                        <input type="text" required placeholder="ما هو موضوع استفسارك؟">
+                    </div>
+                    <div class="form-group">
+                        <label>الرسالة</label>
+                        <textarea rows="4" required placeholder="اكتب تفاصيل رسالتك هنا..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">إرسال الرسالة</button>
+                </form>
+            </section>
+        </div>
+
+        <section class="faq-section">
+            <h2>الأسئلة الشائعة (FAQ)</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">كيف يمكنني الاشتراك في المنصة؟ <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-answer">يمكنك الاشتراك عن طريق إنشاء حساب جديد ثم التواصل مع المدرس الخاص بك لتفعيل الأكواد أو الحصص المقفلة.</div>
             </div>
-            <div class="form-group">
-                <label>البريد الإلكتروني</label>
-                <input type="email" required placeholder="name@example.com">
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">كيف أسجل حسابًا جديدًا؟ <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-answer">اضغط على زر "إنشاء حساب" في القائمة العلوية، وقم بملء بياناتك الشخصية (الاسم، الهاتف، البريد الإلكتروني، كلمة المرور) ثم اضغط تأكيد.</div>
             </div>
-            <div class="form-group">
-                <label>نص الرسالة</label>
-                <textarea rows="4" required placeholder="اكتب استفسارك هنا..."></textarea>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">كيف أتواصل مع الدعم؟ <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-answer">يمكنك التواصل الفوري مع المطور عبر النقر على زر الواتساب الموجود في بطاقة التواصل أو إرسال نموذج الدعم مباشرة.</div>
             </div>
-            <button type="submit" class="btn-send">إرسال الرسالة</button>
-        </form>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">ماذا أفعل إذا نسيت كلمة المرور؟ <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-answer">يمكنك النقر على خيار "نسيت كلمة المرور" في صفحة تسجيل الدخول، أو مراسلة الدعم الفني لإعادة تعيينها برقم هاتفك.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">كيف أجدد الاشتراك؟ <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-answer">التجديد يتم شهرياً أو دورياً حسب رغبة الأستاذ وبناءً على طرق الدفع المتفق عليها داخل الفضاء التعليمي الخاص به.</div>
+            </div>
+        </section>
     </main>
 
     <footer>
-        <div class="container"><p>&copy; 2026 منصة مسارك التعليمية. جميع الحقوق محفوظة.</p></div>
+        <div class="container footer-wrapper">
+            <p>جميع الحقوق محفوظة © 2026 مسارك التعليمي.</p>
+            <ul class="footer-links">
+                <li><a href="teachers.html">المدرسون</a></li>
+                <li><a href="about.html">من نحن</a></li>
+            </ul>
+            <a href="index.html" class="btn-back-home">الرئيسية</a>
+        </div>
     </footer>
 
     <script>
+        // --- محرك تحويل الثيم ---
         const themeBtn = document.getElementById('theme-btn');
         const currentTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', currentTheme);
         themeBtn.innerHTML = currentTheme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        
         themeBtn.addEventListener('click', () => {
             let t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', t);
             localStorage.setItem('theme', t);
             themeBtn.innerHTML = t === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
         });
+
+        // --- دالة فتح وغلق الأسئلة الشائعة ---
+        function toggleFaq(element) {
+            const item = element.parentElement;
+            item.classList.toggle('active');
+            const icon = element.querySelector('i');
+            if(item.classList.contains('active')) {
+                icon.className = "fa-solid fa-chevron-up";
+            } else {
+                icon.className = "fa-solid fa-chevron-down";
+            }
+        }
     </script>
 </body>
 </html>
