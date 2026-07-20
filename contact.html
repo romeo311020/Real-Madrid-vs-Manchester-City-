@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تواصل معنا | مسارك التعليمي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-base: #0a0a0c; --bg-surface: #121216; --border-color: rgba(255, 255, 255, 0.06);
+            --text-main: #f3f4f6; --text-muted: #9ca3af; --accent: #3b82f6;
+        }
+        :root[data-theme="light"] {
+            --bg-base: #f8f9fa; --bg-surface: #ffffff; --border-color: rgba(0, 0, 0, 0.06);
+            --text-main: #1a1a1e; --text-muted: #6c757d; --accent: #228be6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-size: 0.95rem; }
+        .container { width: 90%; max-width: 1100px; margin: 0 auto; }
+        
+        nav { background: var(--bg-surface); border-bottom: 1px solid var(--border-color); height: 70px; display: flex; align-items: center; }
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .logo { font-weight: 800; font-size: 1.2rem; color: var(--text-main); text-decoration: none; }
+        .nav-links { display: flex; gap: 24px; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 0.9rem; }
+        .nav-links a.active { color: var(--text-main); }
+        .theme-toggle { background: none; border: none; color: var(--text-main); cursor: pointer; }
+
+        .contact-wrapper { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; margin: 50px 0; }
+        @media (max-width: 768px) { .contact-wrapper { grid-template-columns: 1fr; } }
+        
+        .contact-info h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+        .contact-info p { color: var(--text-muted); margin-bottom: 30px; font-size: 0.9rem; }
+        .info-item { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .info-item i { font-size: 1.1rem; color: var(--accent); }
+        
+        .contact-form { background: var(--bg-surface); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 11px 14px; background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); outline: none; font-size: 0.9rem; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+        .btn-send { width: 100%; padding: 12px; background: var(--text-main); color: var(--bg-base); border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+
+        footer { border-top: 1px solid var(--border-color); padding: 30px 0; font-size: 0.85rem; color: var(--text-muted); margin-top: 80px; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container nav-wrapper">
+            <a href="index.html" class="logo">مسارك التعليمي</a>
+            <ul class="nav-links">
+                <li><a href="index.html">الرئيسية</a></li>
+                <li><a href="teachers.html">المدرسون</a></li>
+                <li><a href="about.html">من نحن</a></li>
+                <li><a href="contact.html" class="active">تواصل معنا</a></li>
+            </ul>
+            <button class="theme-toggle" id="theme-btn"><i class="fa-solid fa-moon"></i></button>
+        </div>
+    </nav>
+
+    <main class="container contact-wrapper">
+        <div class="contact-info">
+            <h2>يسعدنا تواصلك معنا</h2>
+            <p>هل واجهتك مشكلة في الدخول لصفحة مدرسك؟ أو لديك استفسار تقني؟ فريق الدعم الفني متواجد لمساعدتك دائماً.</p>
+            <div class="info-item"><i class="fa-solid fa-envelope"></i> <span>support@masarak.edu</span></div>
+            <div class="info-item"><i class="fa-solid fa-phone"></i> <span>+212 600-000000</span></div>
+            <div class="info-item"><i class="fa-solid fa-location-dot"></i> <span>الدار البيضاء، المغرب</span></div>
+        </div>
+
+        <form class="contact-form" onsubmit="event.preventDefault(); alert('تم إرسال رسالتك لفريق الدعم بنجاح!');">
+            <div class="form-group">
+                <label>الاسم الكامل</label>
+                <input type="text" required placeholder="أدخل اسمك">
+            </div>
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" required placeholder="name@example.com">
+            </div>
+            <div class="form-group">
+                <label>نص الرسالة</label>
+                <textarea rows="4" required placeholder="اكتب استفسارك هنا..."></textarea>
+            </div>
+            <button type="submit" class="btn-send">إرسال الرسالة</button>
+        </form>
+    </main>
+
+    <footer>
+        <div class="container"><p>&copy; 2026 منصة مسارك التعليمية. جميع الحقوق محفوظة.</p></div>
+    </footer>
+
+    <script>
+        const themeBtn = document.getElementById('theme-btn');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeBtn.innerHTML = currentTheme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        themeBtn.addEventListener('click', () => {
+            let t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('theme', t);
+            themeBtn.innerHTML = t === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        });
+    </script>
+</body>
+</html>
