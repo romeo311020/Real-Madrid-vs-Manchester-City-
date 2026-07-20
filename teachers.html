@@ -137,6 +137,7 @@
         .task-title { font-size: 1rem; font-weight: 700; }
         .badge-difficulty { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
         .diff-متوسط { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .diff-صعب { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
         .status-not-started { background: rgba(239, 68, 68, 0.12); color: #ef4444; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
 
         /* كروت الإعلانات */
@@ -179,7 +180,7 @@
         
         <aside>
             <ul class="sidebar-menu">
-                <li class="menu-item active" onclick="switchSection('lectures', this)"><span class="item-text"><i class="fa-solid fa-play style-icon" style="margin-left: 8px;"></i>المحاضرات</span><span class="menu-counter" id="count-lectures">0</span></li>
+                <li class="menu-item active" onclick="switchSection('lectures', this)"><span class="item-text"><i class="fa-solid fa-play" style="margin-left: 8px;"></i>المحاضرات</span><span class="menu-counter" id="count-lectures">0</span></li>
                 <li class="menu-item" onclick="switchSection('pdfs', this)"><span class="item-text"><i class="fa-solid fa-file-pdf" style="margin-left: 8px;"></i>الملازم PDF</span><span class="menu-counter" id="count-pdfs">0</span></li>
                 <li class="menu-item" onclick="switchSection('exams', this)"><span class="item-text"><i class="fa-solid fa-spell-check" style="margin-left: 8px;"></i>الامتحانات</span><span class="menu-counter" id="count-exams">0</span></li>
                 <li class="menu-item" onclick="switchSection('assignments', this)"><span class="item-text"><i class="fa-solid fa-pen-clip" style="margin-left: 8px;"></i>الواجبات</span><span class="menu-counter" id="count-assignments">0</span></li>
@@ -234,22 +235,20 @@
     </footer>
 
     <script>
-        // المتغيرات التشغيلية العالمية للملف الشخصي
         const urlParams = new URLSearchParams(window.location.search);
         const currentTeacherId = urlParams.get('id') || 't1';
         let currentSection = 'lectures';
         let currentCategoryFilter = 'all';
 
-        // قواعد البيانات المحملة من السيرفر/الملفات
+        // الحافظة المحلية المفلترة حسب المدرس الحالي
         let db = { teachers: [], lectures: [], pdfs: [], exams: [], assignments: [], announcements: [] };
 
         document.addEventListener("DOMContentLoaded", () => {
             initSystemThemes();
             loadStudentNavData();
-            fetchAllDataSources();
+            fetchDataFromUnifiedJson();
         });
 
-        // إعداد بيانات الطالب في الهيدر والـ Welcome
         function loadStudentNavData() {
             const user = JSON.parse(localStorage.getItem('currentUser'));
             if(user) {
@@ -257,27 +256,20 @@
             }
         }
 
-        // جلب البيانات بشكل معزول ومتوازي (Asynchronous Fetching) لزيادة السرعة والأداء
-        async function fetchAllDataSources() {
+        // جلب البيانات من ملف data.json الموحد وتوزيعها برمجياً
+        async function fetchDataFromUnifiedJson() {
             try {
-                const paths = {
-                    teachers: 'teachers.json', lectures: 'lectures.json', pdfs: 'pdfs.json',
-                    exams: 'exams.json', assignments: 'assignments.json', announcements: 'announcements.json'
-                };
-
-                // تنفيذ جلب متوازي لضمان الكفاءة
-                const responses = await Promise.all(Object.values(paths).map(p => fetch(p).then(res => res.json()).catch(() => [])));
+                const response = await fetch('data.json');
+                if(!response.ok) throw new Error("الملف غير موجود");
+                const data = await response.json();
                 
-                Object.keys(paths).forEach((key, index) => {
-                    db[key] = responses[index];
-                });
-
-                // تصفية البيانات وربطها بالـ ID الخاص بالمدرس الحالي
-                db.lectures = db.lectures.filter(item => item.teacherId === currentTeacherId);
-                db.pdfs = db.pdfs.filter(item => item.teacherId === currentTeacherId);
-                db.exams = db.exams.filter(item => item.teacherId === currentTeacherId);
-                db.assignments = db.assignments.filter(item => item.teacherId === currentTeacherId);
-                db.announcements = db.announcements.filter(item => item.teacherId === currentTeacherId);
+                // تصفية وحقن البيانات الخاصة بهذا المدرس بالتحديد
+                db.teachers = data.teachers || [];
+                db.lectures = (data.lectures || []).filter(item => item.teacherId === currentTeacherId);
+                db.pdfs = (data.pdfs || []).filter(item => item.teacherId === currentTeacherId);
+                db.exams = (data.exams || []).filter(item => item.teacherId === currentTeacherId);
+                db.assignments = (data.assignments || []).filter(item => item.teacherId === currentTeacherId);
+                db.announcements = (data.announcements || []).filter(item => item.teacherId === currentTeacherId);
 
                 renderTeacherProfile();
                 updateSidebarCounters();
@@ -285,18 +277,20 @@
                 renderDynamicSection();
 
             } catch (err) {
-                showToast("حدث خطأ أثناء تحميل الملفات الأكاديمية.");
+                console.error(err);
+                showToast("خطأ 404: فشل تحميل ملف data.json الموحد.");
             }
         }
 
-        // رندر بطاقة المدرس الفاخرة
         function renderTeacherProfile() {
-            const teacher = db.teachers.find(t => t.id === currentTeacherId) || db.teachers[0];
-            if(!teacher) return;
+            const teacher = db.teachers.find(t => t.id === currentTeacherId);
+            if(!teacher) {
+                document.getElementById('teacher-profile-target').innerHTML = `<p style="padding:20px; color:#ef4444;">عذراً، لم يتم العثور على بيانات هذا المدرس في ملف الـ JSON.</p>`;
+                return;
+            }
 
             document.getElementById('breadcrumb-teacher').innerText = teacher.name;
             
-            // حساب النجوم التقديرية بالـ Loop
             let stars = '';
             for(let i=1; i<=5; i++) { stars += `<i class="fa-solid fa-star" style="color:#f59e0b; font-size:0.8rem;"></i>`; }
 
@@ -323,7 +317,6 @@
             `;
         }
 
-        // تحديث العدادات الذكية في القائمة الجانبية بجانب كل قسم
         function updateSidebarCounters() {
             document.getElementById('count-lectures').innerText = db.lectures.length;
             document.getElementById('count-pdfs').innerText = db.pdfs.length;
@@ -332,17 +325,15 @@
             document.getElementById('count-announcements').innerText = db.announcements.length;
         }
 
-        // حساب نسبة التقدم الوهمية والمحفوظة استناداً لبيانات المدرس
         function calculateStudentProgress() {
             const total = db.lectures.length;
-            const watched = total > 0 ? Math.floor(total / 2) : 0; // محاكاة تتبعية
+            const watched = total > 0 ? Math.floor(total / 2) : 0; 
             const percent = total > 0 ? Math.floor((watched / total) * 100) : 0;
             
             document.getElementById('progress-text').innerText = `شاهدت ${watched} من ${total} (${percent}%)`;
             document.getElementById('progress-fill').style.width = `${percent}%`;
         }
 
-        // التبديل بين أقسام القائمة الجانبية (Sidebar Navigation)
         function switchSection(sectionName, element) {
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
@@ -350,7 +341,6 @@
             renderDynamicSection();
         }
 
-        // تبديل فلاتر الفصول
         function switchFilter(category, element) {
             document.querySelectorAll('.filter-btn').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
@@ -358,24 +348,20 @@
             renderDynamicSection();
         }
 
-        // معالجة البحث والتصفية المتزامنة (Search Engine)
         function triggerSearchFilter() {
             renderDynamicSection();
         }
 
-        // الرندر الذكي المركزي للمنطقة المركزية للكروت
         function renderDynamicSection() {
             const target = document.getElementById('dynamic-cards-target');
             const searchWord = document.getElementById('main-search-input').value.trim().toLowerCase();
             
             let dataPool = db[currentSection] || [];
 
-            // 1. التصفية بالفئات والفصول (Category Filter)
             if(currentCategoryFilter !== 'all' && currentSection !== 'announcements') {
                 dataPool = dataPool.filter(item => item.category === currentCategoryFilter);
             }
 
-            // 2. تصفية بمحرك البحث (Search Keyword Filter)
             if(searchWord) {
                 dataPool = dataPool.filter(item => {
                     const title = item.title ? item.title.toLowerCase() : '';
@@ -384,15 +370,13 @@
                 });
             }
 
-            // عرض تنبيه في حالة عدم وجود عناصر
             if(dataPool.length === 0) {
                 target.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px 0;"><i class="fa-regular fa-folder-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>لا يوجد محتوى متاح يطابق خياراتك حالياً.</div>`;
                 return;
             }
 
-            target.innerHTML = ''; // تصفية لتهيئة البيانات الجديدة بقوة الـ Fade In
+            target.innerHTML = ''; 
 
-            // رندر بناءً على الـ نوع المختار
             dataPool.forEach(item => {
                 let cardHtml = '';
                 
@@ -420,14 +404,14 @@
                 } 
                 else if(currentSection === 'pdfs') {
                     cardHtml = `
-                        <div class="pdf-card fade-in" style="grid-column: span 1;">
+                        <div class="pdf-card fade-in">
                             <img src="${item.cover}" class="pdf-cover" loading="lazy">
                             <div class="pdf-info">
                                 <h3>${item.title}</h3>
                                 <p class="pdf-meta"><i class="fa-regular fa-file"></i> ${item.pages} صفحة | الحجم: ${item.size}</p>
                                 <div class="card-actions">
                                     <button class="btn-main-act" style="padding: 6px;" onclick="showToast('بدء تحميل الملزمة الفوري...')"><i class="fa-solid fa-download"></i> تحميل</button>
-                                    <button class="btn-fav" style="padding: 6px 12px;" onclick="alert('واجهة المعاينة السريعة قيد التطوير.')">معاينة</button>
+                                    <button class="btn-fav" style="padding: 6px 12px;" onclick="alert('واجهة المعاينة السريعة قيد التطوير المتقدم.')">معاينة</button>
                                 </div>
                             </div>
                         </div>
@@ -471,13 +455,11 @@
             });
         }
 
-        // دالة نسخ رابط الصفحة الحالية للمشاركة
         function copyPageUrl() {
             navigator.clipboard.writeText(window.location.href);
             showToast("تم نسخ رابط فضاء الأستاذ إلى الحافظة!");
         }
 
-        // نظام التنبيهات المنبثقة الذكي السريع (Toast Notifications)
         function showToast(message) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -487,7 +469,6 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        // محرك الألوان والتبديل الكامل (Dark / Light Theme Engine)
         function initSystemThemes() {
             const btn = document.getElementById('theme-toggle-btn');
             const current = localStorage.getItem('theme') || 'dark';
