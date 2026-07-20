@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي | مسارك التعليمي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // التحقق الفوري من تسجيل الدخول
+        if(!localStorage.getItem('currentUser')) { window.location.href = "login.html"; }
+    </script>
+    <style>
+        :root[data-theme="dark"] {
+            --bg-base: #0a0a0c; --bg-surface: #121216; --border-color: rgba(255, 255, 255, 0.06);
+            --text-main: #f3f4f6; --text-muted: #9ca3af; --accent: #3b82f6;
+        }
+        :root[data-theme="light"] {
+            --bg-base: #f8f9fa; --bg-surface: #ffffff; --border-color: rgba(0, 0, 0, 0.06);
+            --text-main: #1a1a1e; --text-muted: #6c757d; --accent: #228be6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-base); color: var(--text-main); }
+        .container { width: 90%; max-width: 800px; margin: 0 auto; }
+        
+        nav { background: var(--bg-surface); border-bottom: 1px solid var(--border-color); height: 70px; display: flex; align-items: center; }
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        
+        .profile-card { background: var(--bg-surface); border: 1px solid var(--border-color); padding: 40px 30px; border-radius: 20px; margin-top: 50px; text-align: center; }
+        .avatar-geo { width: 90px; height: 90px; background: var(--border-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 20px auto; font-size: 2rem; color: var(--accent); }
+        .profile-card h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; }
+        .profile-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px; }
+        
+        .meta-box { border-top: 1px solid var(--border-color); padding: 20px 0; text-align: right; display: flex; justify-content: space-between; font-size: 0.9rem; }
+        .btn-logout { padding: 10px 24px; background: #ef4444; color: #fff; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container nav-wrapper">
+            <a href="index.html" style="text-decoration:none; color:var(--text-main); font-weight:800;"><i class="fa-solid fa-graduation-cap"></i> مسارك التعليمي</a>
+            <a href="teachers.html" style="text-decoration:none; color:var(--text-muted); font-size:0.9rem;">العودة للمدرسين</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="profile-card">
+            <div class="avatar-geo"><i class="fa-regular fa-user"></i></div>
+            <h2 id="user-title">حساب الطالب</h2>
+            <p id="user-email">loading...</p>
+            
+            <div class="meta-box"><span>نوع الحساب</span><strong>طالب (بكالوريا 2026)</strong></div>
+            <div class="meta-box"><span>حالة الاشتراكات</span><strong style="color:#10b981;">نشط ومصادق</strong></div>
+            
+            <button class="btn-logout" onclick="localStorage.removeItem('currentUser'); window.location.href='index.html';">تسجيل الخروج</button>
+        </div>
+    </main>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if(user) {
+            document.getElementById('user-email').innerText = user.email;
+            document.getElementById('user-title').innerText = `مرحباً بك: ${user.email.split('@')[0]}`;
+        }
+        // تطبيق الثيم الحالي المتناسق
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+    </script>
+</body>
+</html>
