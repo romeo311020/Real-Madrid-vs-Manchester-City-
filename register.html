@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب | مسارك التعليمي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] { --bg-base:#0a0a0c; --bg-surface:#121216; --border-color:rgba(255,255,255,0.06); --text-main:#f3f4f6; --text-muted:#9ca3af; --accent:#3b82f6; }
+        :root[data-theme="light"] { --bg-base:#f8f9fa; --bg-surface:#ffffff; --border-color:rgba(0,0,0,0.06); --text-main:#1a1a1e; --text-muted:#6c757d; --accent:#228be6; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-base); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .auth-card { background: var(--bg-surface); border: 1px solid var(--border-color); width: 100%; max-width: 440px; padding: 35px; border-radius: 20px; }
+        .auth-header { text-align: center; margin-bottom: 25px; }
+        .auth-header h2 { font-size: 1.6rem; font-weight: 800; }
+        .auth-header p { color: var(--text-muted); font-size: 0.85rem; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 11px 14px; background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); font-size: 0.9rem; outline: none; }
+        .form-group input:focus { border-color: var(--accent); }
+        
+        .btn-submit { width: 100%; padding: 12px; background: var(--text-main); color: var(--bg-base); border: none; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-top: 10px; }
+        .auth-footer { text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); }
+        .auth-footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>إنشاء حساب طالب جديد</h2>
+            <p>انضم إلينا الآن للوصول لكافة الملفات والمحاضرات الحصرية</p>
+        </div>
+        <form id="register-form" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label>الاسم بالكامل</label>
+                <input type="text" required placeholder="أدخل اسمك الثلاثي">
+            </div>
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="tel" required placeholder="06XXXXXXXX">
+            </div>
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" required placeholder="yourname@domain.com">
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور</label>
+                <input type="password" required placeholder="••••••••">
+            </div>
+            <div class="form-group">
+                <label>تأكيد كلمة المرور</label>
+                <input type="password" required placeholder="••••••••">
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom: 20px; display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" required> موافق على كافة شروط وسياسة استخدام المنصة التعليمية
+            </div>
+            <button type="submit" class="btn-submit">إنشاء الحساب</button>
+        </form>
+        <div class="auth-footer">
+            لديك حساب بالفعل؟ <a href="login.html">تسجيل الدخول مباشرة</a>
+        </div>
+    </div>
+
+    <script>
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('تم إنشاء الحساب البرمجي التجريبي بنجاح! يرجى الدخول الآن.');
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>
