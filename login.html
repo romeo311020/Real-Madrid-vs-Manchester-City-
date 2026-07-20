@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | مسارك التعليمي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root[data-theme="dark"] { --bg-base:#0a0a0c; --bg-surface:#121216; --border-color:rgba(255,255,255,0.06); --text-main:#f3f4f6; --text-muted:#9ca3af; --accent:#3b82f6; }
+        :root[data-theme="light"] { --bg-base:#f8f9fa; --bg-surface:#ffffff; --border-color:rgba(0,0,0,0.06); --text-main:#1a1a1e; --text-muted:#6c757d; --accent:#228be6; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-base); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .auth-card { background: var(--bg-surface); border: 1px solid var(--border-color); width: 100%; max-width: 420px; padding: 35px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .auth-header { text-align: center; margin-bottom: 30px; }
+        .auth-header h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 5px; }
+        .auth-header p { color: var(--text-muted); font-size: 0.85rem; }
+        
+        .form-group { margin-bottom: 18px; position: relative; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+        .form-group input { width: 100%; padding: 12px 15px; background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); font-size: 0.9rem; outline: none; }
+        .form-group input:focus { border-color: var(--accent); }
+        
+        .form-options { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; margin-bottom: 25px; color: var(--text-muted); }
+        .form-options a { color: var(--accent); text-decoration: none; font-weight: 600; }
+        
+        .btn-submit { width: 100%; padding: 12px; background: var(--text-main); color: var(--bg-base); border: none; border-radius: 10px; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+        .btn-submit:hover { opacity: 0.9; }
+        .auth-footer { text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); }
+        .auth-footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>مرحباً بك مجدداً</h2>
+            <p>سجل دخولك لمتابعة حصصك وملازمك الدراسية</p>
+        </div>
+        <form id="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>البريد الإلكتروني أو رقم الهاتف</label>
+                <input type="text" id="login-id" required placeholder="name@example.com">
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="login-pass" required placeholder="••••••••">
+            </div>
+            <div class="form-options">
+                <label style="display:flex; align-items:center; gap:5px; cursor:pointer;"><input type="checkbox"> تذكرني</label>
+                <a href="#" onclick="alert('برمجة استعادة كلمة المرور ستتوفر قريباً!')">نسيت كلمة المرور؟</a>
+            </div>
+            <button type="submit" class="btn-submit">تسجيل الدخول</button>
+        </form>
+        <div class="auth-footer">
+            ليس لديك حساب؟ <a href="register.html">إنشاء حساب جديد</a>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin(e) {
+            e.preventDefault();
+            const identifier = document.getElementById('login-id').value;
+            // محاكاة تسجيل الدخول وحفظ السيشن محلياً برمجياً
+            localStorage.setItem('currentUser', JSON.stringify({ email: identifier, role: 'student' }));
+            alert('تم تسجيل الدخول بنجاح! سيتم توجيهك الآن لصفحة المدرسين.');
+            window.location.href = "teachers.html";
+        }
+    </script>
+</body>
+</html>
