@@ -7,128 +7,145 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
-        // حماية أمنية فورية لمنع وميض رندر المحتوى لغير المسجلين
         if(!localStorage.getItem('currentUser')) { window.location.href = "login.html"; }
     </script>
     <style>
-        /* --- الهوية البصرية ونظام الألوان المينيمال العصري --- */
+        /* --- الهوية البصرية ونظام الألوان المينيمال النيون --- */
         :root[data-theme="dark"] {
-            --bg-base: #0a0a0c; --bg-surface: #121216; --bg-surface-hover: #1a1a22;
-            --border-color: rgba(255, 255, 255, 0.06); --text-main: #f3f4f6; --text-muted: #9ca3af;
-            --accent: #3b82f6; --accent-glow: rgba(59, 130, 246, 0.12); --shadow: 0 10px 30px rgba(0,0,0,0.4);
-            --skeleton-bg: #1f1f27;
+            --bg-base: #070709; --bg-surface: rgba(18, 18, 24, 0.7); --bg-surface-hover: #171722;
+            --border-color: rgba(255, 255, 255, 0.05); --text-main: #f3f4f6; --text-muted: #9ca3af;
+            --accent: #3b82f6; --accent-glow: rgba(59, 130, 246, 0.15); --shadow: 0 20px 40px rgba(0,0,0,0.5);
+            --glass-bg: rgba(255, 255, 255, 0.01); --glass-blur: blur(12px);
         }
         :root[data-theme="light"] {
-            --bg-base: #f8f9fa; --bg-surface: #ffffff; --bg-surface-hover: #f1f3f5;
-            --border-color: rgba(0, 0, 0, 0.06); --text-main: #1a1a1e; --text-muted: #6c757d;
-            --accent: #228be6; --accent-glow: rgba(34, 139, 230, 0.1); --shadow: 0 10px 30px rgba(0,0,0,0.04);
-            --skeleton-bg: #e9ecef;
+            --bg-base: #f4f6f9; --bg-surface: rgba(255, 255, 255, 0.75); --bg-surface-hover: #f1f3f5;
+            --border-color: rgba(0, 0, 0, 0.05); --text-main: #131316; --text-muted: #6b7280;
+            --accent: #1a73e8; --accent-glow: rgba(26, 115, 232, 0.1); --shadow: 0 20px 40px rgba(0,0,0,0.05);
+            --glass-bg: rgba(0, 0, 0, 0.01); --glass-blur: blur(12px);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; transition: background-color 0.2s, border-color 0.2s; }
-        body { background-color: var(--bg-base); color: var(--text-main); font-size: 0.95rem; line-height: 1.6; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { background-color: var(--bg-base); color: var(--text-main); font-size: 0.95rem; line-height: 1.6; overflow-x: hidden; }
         
-        .fade-in { animation: fadeIn 0.4s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- أنيميشن التظهير التكيفي الفاخر --- */
+        .reveal-card { opacity: 0; transform: translateY(20px); animation: revealIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        @keyframes revealIn { to { opacity: 1; transform: translateY(0); } }
 
-        /* --- الهيدر وشرائط التنقل --- */
-        nav { background: var(--bg-surface); border-bottom: 1px solid var(--border-color); height: 70px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+        /* --- شريط العلو الزجاجي --- */
+        nav { background: var(--bg-surface); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 1px solid var(--border-color); height: 75px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
         .nav-container { width: 95%; max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
-        .logo i { color: var(--accent); }
+        .logo { font-weight: 800; font-size: 1.25rem; display: flex; align-items: center; gap: 10px; color: var(--text-main); text-decoration: none; }
+        .logo i { color: var(--accent); filter: drop-shadow(0 0 8px var(--accent)); }
         .nav-user-zone { display: flex; align-items: center; gap: 20px; }
         .user-meta { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.88rem; }
-        .user-avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--accent-glow); display: flex; justify-content: center; align-items: center; border: 1px solid var(--border-color); }
-        .nav-btn { background: none; border: none; color: var(--text-main); cursor: pointer; font-size: 1.1rem; }
-        .btn-logout-head { font-size: 0.85rem; font-weight: 700; color: #ef4444; background: transparent; border: none; cursor: pointer; }
+        .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--accent-glow); display: flex; justify-content: center; align-items: center; border: 1px solid var(--border-color); }
+        .nav-btn { background: none; border: none; color: var(--text-main); cursor: pointer; font-size: 1.15rem; padding: 8px; border-radius: 50%; }
+        .nav-btn:hover { background: var(--bg-surface-hover); }
+        .btn-logout-head { font-size: 0.85rem; font-weight: 700; color: #ef4444; background: transparent; border: none; cursor: pointer; padding: 8px 12px; border-radius: 8px; }
+        .btn-logout-head:hover { background: rgba(239, 68, 68, 0.1); }
 
-        .breadcrumb-wrapper { width: 95%; max-width: 1400px; margin: 20px auto 0 auto; font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 8px; align-items: center; }
+        .breadcrumb-wrapper { width: 95%; max-width: 1400px; margin: 25px auto 0 auto; font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 8px; align-items: center; }
+        .breadcrumb-wrapper a { text-decoration: none; color: var(--text-muted); }
+        .breadcrumb-wrapper a:hover { color: var(--accent); }
 
-        /* --- لوحة التحكم والتقسيم الرئيسي --- */
-        .dashboard-layout { width: 95%; max-width: 1400px; margin: 25px auto 60px auto; display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
+        /* --- الهيكل الأساسي للـ Dashboard --- */
+        .dashboard-layout { width: 95%; max-width: 1400px; margin: 25px auto 60px auto; display: grid; grid-template-columns: 300px 1fr; gap: 35px; }
         @media (max-width: 1024px) { .dashboard-layout { grid-template-columns: 1fr; } }
 
-        aside { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; height: fit-content; position: sticky; top: 95px; }
-        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-radius: 10px; color: var(--text-muted); font-weight: 600; font-size: 0.9rem; cursor: pointer; }
-        .menu-item:hover, .menu-item.active { background: var(--accent-glow); color: var(--accent); }
-        .menu-counter { font-size: 0.75rem; background: var(--bg-base); padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border-color); color: var(--text-main); }
+        /* --- القائمة الجانبية بتأثير حركي النيون حاد --- */
+        aside { background: var(--bg-surface); backdrop-filter: var(--glass-blur); border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; height: fit-content; position: sticky; top: 100px; box-shadow: var(--shadow); }
+        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-radius: 12px; color: var(--text-muted); font-weight: 600; font-size: 0.92rem; cursor: pointer; position: relative; overflow: hidden; }
+        .menu-item:hover { color: var(--text-main); background: var(--bg-surface-hover); padding-right: 24px; }
+        .menu-item.active { background: var(--accent-glow); color: var(--accent); border-right: 4px solid var(--accent); font-weight: 700; }
+        .menu-counter { font-size: 0.75rem; background: var(--bg-base); padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border-color); color: var(--text-main); }
 
-        .content-area { display: flex; flex-direction: column; gap: 30px; }
+        .content-area { display: flex; flex-direction: column; gap: 35px; }
 
-        /* --- بطاقة المدرس الفاخرة المحدثة --- */
-        .teacher-profile-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 20px; padding: 30px; display: grid; grid-template-columns: auto 1fr; gap: 30px; box-shadow: var(--shadow); }
+        /* --- بطاقة المدرس الفاخرة ثلاثية الأبعاد التفاعلية --- */
+        .teacher-profile-card { background: var(--bg-surface); backdrop-filter: var(--glass-blur); border: 1px solid var(--border-color); border-radius: 24px; padding: 35px; display: grid; grid-template-columns: auto 1fr; gap: 35px; box-shadow: var(--shadow); position: relative; }
         @media (max-width: 768px) { .teacher-profile-card { grid-template-columns: 1fr; text-align: center; justify-items: center; } }
-        .t-large-img { width: 140px; height: 140px; border-radius: 20px; object-fit: cover; border: 1px solid var(--border-color); }
+        .t-large-img { width: 150px; height: 150px; border-radius: 24px; object-fit: cover; border: 2px solid var(--border-color); box-shadow: var(--shadow); }
         .t-info-block { display: flex; flex-direction: column; justify-content: center; }
-        .t-subject { font-size: 0.8rem; background: var(--accent-glow); color: var(--accent); padding: 4px 12px; border-radius: 50px; font-weight: 700; width: fit-content; margin-bottom: 10px; }
-        @media (max-width: 768px) { .t-subject { margin: 0 auto 10px auto; } }
-        .t-name-row { display: flex; align-items: center; gap: 15px; margin-bottom: 8px; }
+        .t-subject { font-size: 0.8rem; background: var(--accent-glow); color: var(--accent); padding: 5px 16px; border-radius: 50px; font-weight: 700; width: fit-content; margin-bottom: 12px; border: 1px solid rgba(59, 130, 246, 0.3); }
+        @media (max-width: 768px) { .t-subject { margin: 0 auto 12px auto; } }
+        .t-name-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
         @media (max-width: 768px) { .t-name-row { justify-content: center; } }
-        .t-name-row h2 { font-size: 1.6rem; font-weight: 800; }
-        .t-experience { font-size: 0.8rem; color: var(--text-muted); }
-        .t-bio { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px; }
+        .t-name-row h2 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.5px; }
+        .t-experience { font-size: 0.82rem; color: var(--text-muted); background: var(--bg-base); padding: 2px 10px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .t-bio { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px; max-width: 750px; }
         
-        .t-stats-grid { display: flex; flex-wrap: wrap; gap: 15px; border-top: 1px solid var(--border-color); padding-top: 20px; }
+        .t-stats-grid { display: flex; flex-wrap: wrap; gap: 15px; border-top: 1px solid var(--border-color); padding-top: 25px; }
         @media (max-width: 768px) { .t-stats-grid { justify-content: center; } }
-        .stat-badge { font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; background: var(--bg-base); padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .stat-badge strong { color: var(--text-main); }
-        .t-actions-row { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-share { padding: 6px 12px; font-size: 0.8rem; font-weight: 600; background: none; border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; cursor: pointer; }
+        .stat-badge { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; background: var(--bg-base); padding: 8px 16px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .stat-badge strong { color: var(--text-main); font-weight: 700; }
+        .t-actions-row { display: flex; gap: 12px; margin-top: 20px; }
+        .btn-share { padding: 8px 16px; font-size: 0.85rem; font-weight: 600; background: none; border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .btn-share:hover { background: var(--text-main); color: var(--bg-base); border-color: transparent; transform: translateY(-2px); }
 
-        /* --- أدوات التحكم (البحث والفلاتر) --- */
+        /* --- أدوات التصفية والتحكم الذكي --- */
         .controls-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .search-box { position: relative; flex: 1; max-width: 350px; min-width: 250px; }
-        .search-box i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-        .search-box input { width: 100%; padding: 11px 40px 11px 15px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); outline: none; font-size: 0.88rem; }
+        .search-box { position: relative; flex: 1; max-width: 380px; min-width: 260px; }
+        .search-box i { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-box input { width: 100%; padding: 12px 42px 12px 18px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); outline: none; font-size: 0.9rem; }
+        .search-box input:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
         
-        .filters-group { display: flex; gap: 8px; overflow-x: auto; }
-        .filter-btn { background: var(--bg-surface); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
-        .filter-btn.active { background: var(--text-main); color: var(--bg-base); border-color: transparent; }
+        .filters-group { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+        .filter-btn { background: var(--bg-surface); border: 1px solid var(--border-color); padding: 9px 18px; border-radius: 10px; font-size: 0.88rem; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
+        .filter-btn:hover { color: var(--text-main); border-color: var(--text-muted); }
+        .filter-btn.active { background: var(--accent); color: #ffffff; border-color: transparent; box-shadow: 0 8px 20px var(--accent-glow); }
 
-        /* --- شبكة عرض بطاقات الطلاب والمحاضرات المتغيرة --- */
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        /* --- شبكة ديناميكية متجاوبة للكروت --- */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
         
-        /* كروت المحاضرات */
-        .lecture-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
-        .lecture-card:hover { transform: translateY(-3px); border-color: var(--accent); }
-        .card-img-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; background: var(--skeleton-bg); }
+        /* كروت فديوهات المحاضرات النيون الفاخرة */
+        .lecture-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow); position: relative; }
+        .lecture-card:hover { transform: translateY(-6px) scale(1.01); border-color: var(--accent); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+        .card-img-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; background: var(--bg-surface-hover); overflow: hidden; }
         .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        .badge-new { position: absolute; top: 12px; right: 12px; background: #ef4444; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
-        .card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
-        .card-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
-        .card-body .desc { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 15px; flex: 1; }
-        .card-meta-line { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; margin-bottom: 15px; }
-        .card-actions { display: flex; gap: 10px; }
-        .btn-main-act { flex: 1; padding: 10px; background: var(--accent); color: #fff; border: none; font-weight: 700; border-radius: 8px; cursor: pointer; text-align: center; font-size: 0.85rem; }
-        .btn-fav { padding: 10px; background: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; cursor: pointer; }
+        .lecture-card:hover .card-img-wrapper img { transform: scale(1.06); }
+        .badge-new { position: absolute; top: 14px; right: 14px; background: #ef4444; color: #fff; font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 6px; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4); }
+        .card-body { padding: 22px; flex: 1; display: flex; flex-direction: column; }
+        .card-body h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; line-height: 1.4; color: var(--text-main); }
+        .card-body .desc { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-meta-line { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 14px; margin-bottom: 18px; }
+        .card-meta-line span { display: flex; align-items: center; gap: 6px; }
+        
+        .btn-main-act { flex: 1; padding: 12px; background: var(--accent); color: #fff; border: none; font-weight: 700; border-radius: 10px; cursor: pointer; font-size: 0.88rem; box-shadow: 0 4px 12px var(--accent-glow); display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-main-act:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-fav { padding: 12px; background: var(--bg-base); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; cursor: pointer; }
+        .btn-fav:hover { background: #ef4444; color: #fff; border-color: transparent; }
 
-        /* كروت الملازم PDF */
-        .pdf-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; padding: 15px; display: flex; gap: 15px; align-items: center; }
-        .pdf-cover { width: 70px; height: 95px; object-fit: cover; border-radius: 6px; background: var(--skeleton-bg); }
-        .pdf-info { flex: 1; }
-        .pdf-info h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 5px; }
-        .pdf-meta { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px; }
+        /* كروت الملفات والملازم المحدثة */
+        .pdf-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; display: flex; gap: 20px; align-items: center; box-shadow: var(--shadow); }
+        .pdf-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+        .pdf-cover { width: 80px; height: 110px; object-fit: cover; border-radius: 8px; background: var(--bg-surface-hover); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .pdf-info { flex: 1; display: flex; flex-direction: column; }
+        .pdf-info h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .pdf-meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px; }
 
-        /* كروت الامتحانات والواجبات */
-        .task-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
-        .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-        .badge-difficulty { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
-        .diff-متوسط { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-        .diff-صعب { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-        .status-not-started { background: rgba(239, 68, 68, 0.12); color: #ef4444; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+        /* كروت المهام التفاعلية والامتحانات */
+        .task-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 18px; padding: 24px; box-shadow: var(--shadow); }
+        .task-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+        .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+        .task-title { font-size: 1.05rem; font-weight: 700; }
+        .badge-difficulty { font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+        .diff-متوسط { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+        .diff-صعب { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+        .status-not-started { background: rgba(239, 68, 68, 0.12); color: #ef4444; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 700; }
 
-        /* كروت الإعلانات */
-        .announcement-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-right: 4px solid var(--accent); border-radius: 12px; padding: 20px; }
-        .ann-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-weight: 700; font-size: 0.98rem; }
-        .ann-head i { color: var(--accent); }
-        .ann-text { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px; }
+        /* كروت الإعلانات المثبتة */
+        .announcement-card { background: var(--bg-surface); border: 1px solid var(--border-color); border-right: 4px solid var(--accent); border-radius: 16px; padding: 24px; }
+        .ann-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-weight: 700; font-size: 1.05rem; }
+        .ann-head i { color: var(--accent); filter: drop-shadow(0 0 5px var(--accent)); }
+        .ann-text { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.7; }
 
-        #toast-container { position: fixed; bottom: 20px; left: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: #10b981; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; animation: slideIn 0.3s ease forwards; }
-        @keyframes slideIn { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        /* --- نظام توست إشعارات منزلق --- */
+        #toast-container { position: fixed; bottom: 24px; left: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; }
+        .toast { background: var(--text-main); color: var(--bg-base); padding: 14px 28px; border-radius: 12px; font-size: 0.9rem; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: toastIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes toastIn { from { transform: translateX(-100%) scale(0.9); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
 
-        footer { border-top: 1px solid var(--border-color); padding: 30px 0; font-size: 0.85rem; color: var(--text-muted); margin-top: 60px; text-align: center; }
+        footer { border-top: 1px solid var(--border-color); padding: 35px 0; font-size: 0.88rem; color: var(--text-muted); margin-top: 80px; text-align: center; }
     </style>
 </head>
 <body>
@@ -140,7 +157,7 @@
                 <button class="nav-btn" id="theme-toggle-btn"><i class="fa-solid fa-moon"></i></button>
                 <div class="user-meta">
                     <div class="user-avatar"><i class="fa-regular fa-user"></i></div>
-                    <span id="nav-student-name">الطالب</span>
+                    <span id="nav-student-name">الأستاذ</span>
                 </div>
                 <button class="btn-logout-head" onclick="localStorage.removeItem('currentUser'); window.location.href='index.html';">تسجيل الخروج</button>
             </div>
@@ -148,27 +165,27 @@
     </nav>
 
     <div class="breadcrumb-wrapper">
-        <a href="index.html" style="color: var(--text-muted);">الرئيسية</a> / <a href="teachers.html" style="color: var(--text-muted);">المدرسون</a> / <span id="breadcrumb-teacher" style="color: var(--text-main); font-weight: 600;">تحميل...</span>
+        <a href="index.html">الرئيسية</a> / <a href="teachers.html">المدرسون</a> / <span id="breadcrumb-teacher" style="color: var(--text-main); font-weight: 700;">تحميل فضاء المدرس...</span>
     </div>
 
     <main class="dashboard-layout">
-        <aside>
+        <aside class="reveal-card">
             <ul class="sidebar-menu">
-                <li class="menu-item active" onclick="switchSection('lectures', this)"><span><i class="fa-solid fa-play" style="margin-left:8px;"></i>المحاضرات</span><span class="menu-counter" id="count-lectures">0</span></li>
-                <li class="menu-item" onclick="switchSection('pdfs', this)"><span><i class="fa-solid fa-file-pdf" style="margin-left:8px;"></i>الملازم PDF</span><span class="menu-counter" id="count-pdfs">0</span></li>
-                <li class="menu-item" onclick="switchSection('exams', this)"><span><i class="fa-solid fa-spell-check" style="margin-left:8px;"></i>الامتحانات</span><span class="menu-counter" id="count-exams">0</span></li>
-                <li class="menu-item" onclick="switchSection('assignments', this)"><span><i class="fa-solid fa-pen-clip" style="margin-left:8px;"></i>الواجبات</span><span class="menu-counter" id="count-assignments">0</span></li>
-                <li class="menu-item" onclick="switchSection('announcements', this)"><span><i class="fa-solid fa-bullhorn" style="margin-left:8px;"></i>الإعلانات</span><span class="menu-counter" id="count-announcements">0</span></li>
+                <li class="menu-item active" onclick="switchSection('lectures', this)"><span><i class="fa-solid fa-play" style="margin-left: 10px;"></i>المحاضرات</span><span class="menu-counter" id="count-lectures">0</span></li>
+                <li class="menu-item" onclick="switchSection('pdfs', this)"><span><i class="fa-solid fa-file-pdf" style="margin-left: 10px;"></i>الملازم PDF</span><span class="menu-counter" id="count-pdfs">0</span></li>
+                <li class="menu-item" onclick="switchSection('exams', this)"><span><i class="fa-solid fa-spell-check" style="margin-left: 10px;"></i>الامتحانات</span><span class="menu-counter" id="count-exams">0</span></li>
+                <li class="menu-item" onclick="switchSection('assignments', this)"><span><i class="fa-solid fa-pen-clip" style="margin-left: 10px;"></i>الواجبات</span><span class="menu-counter" id="count-assignments">0</span></li>
+                <li class="menu-item" onclick="switchSection('announcements', this)"><span><i class="fa-solid fa-bullhorn" style="margin-left: 10px;"></i>الإعلانات</span><span class="menu-counter" id="count-announcements">0</span></li>
             </ul>
         </aside>
 
         <div class="content-area">
-            <section class="teacher-profile-card fade-in" id="teacher-profile-target"></section>
+            <section class="teacher-profile-card reveal-card" id="teacher-profile-target"></section>
 
-            <section class="controls-row fade-in">
+            <section class="controls-row reveal-card">
                 <div class="search-box">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="main-search-input" placeholder="ابحث في هذا القسم..." oninput="triggerSearchFilter()">
+                    <input type="text" id="main-search-input" placeholder="ابحث في هذا القسم باسم العنصر..." oninput="triggerSearchFilter()">
                 </div>
                 <div class="filters-group">
                     <button class="filter-btn active" onclick="switchFilter('all', this)">الكل</button>
@@ -178,7 +195,7 @@
                 </div>
             </section>
 
-            <section class="cards-grid fade-in" id="dynamic-cards-target"></section>
+            <section class="cards-grid" id="dynamic-cards-target"></section>
         </div>
     </main>
 
@@ -186,9 +203,8 @@
     <footer><p>جميع الحقوق محفوظة © 2026 مسارك التعليمي.</p></footer>
 
     <script>
-        // التقاط الـ ID بشكل مرن وديناميكي بغض النظر عن الاسم أو المعرف الرقمي
         const urlParams = new URLSearchParams(window.location.search);
-        const currentTeacherId = urlParams.get('id');
+        const currentTeacherId = urlParams.get('id') || 't1';
 
         let currentSection = 'lectures';
         let currentCategoryFilter = 'all';
@@ -197,11 +213,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             initSystemThemes();
             loadStudentNavData();
-            if (!currentTeacherId) {
-                showToast("خطأ: لم يتم تحديد معرّف المدرس.");
-                return;
-            }
-            fetchAndFilterData();
+            fetchUnifiedDataEngine();
         });
 
         function loadStudentNavData() {
@@ -209,40 +221,33 @@
             if(user) { document.getElementById('nav-student-name').innerText = user.email.split('@')[0]; }
         }
 
-        // جلب الملفات المنفصلة بالتوازي وتصفيتها فورا بناء على الـ ID الخاص بالمدرس المطلوب
-        async function fetchAndFilterData() {
+        // محرك الجلب الأحادي عالي السرعة لقراءة الـ data.json الموحد
+        async function fetchUnifiedDataEngine() {
             try {
-                const fetchSource = async (file) => {
-                    const res = await fetch(file);
-                    return res.ok ? res.json() : [];
-                };
+                const response = await fetch('data.json');
+                if(!response.ok) throw new Error();
+                const data = await response.json();
 
-                // استدعاء متوازٍ لتقليل زمن الاستجابة (High Performance)
-                const [teachers, lectures, pdfs, exams, assignments, announcements] = await Promise.all([
-                    fetchSource('teachers.json'), fetchSource('lectures.json'), fetchSource('pdfs.json'),
-                    fetchSource('exams.json'), fetchSource('assignments.json'), fetchSource('announcements.json')
-                ]);
-
-                db.teachers = teachers;
-                db.lectures = lectures.filter(i => i.teacherId === currentTeacherId);
-                db.pdfs = pdfs.filter(i => i.teacherId === currentTeacherId);
-                db.exams = exams.filter(i => i.teacherId === currentTeacherId);
-                db.assignments = assignments.filter(i => i.teacherId === currentTeacherId);
-                db.announcements = announcements.filter(i => i.teacherId === currentTeacherId);
+                db.teachers = data.teachers || [];
+                db.lectures = (data.lectures || []).filter(item => item.teacherId === currentTeacherId);
+                db.pdfs = (data.pdfs || []).filter(item => item.teacherId === currentTeacherId);
+                db.exams = (data.exams || []).filter(item => item.teacherId === currentTeacherId);
+                db.assignments = (data.assignments || []).filter(item => item.teacherId === currentTeacherId);
+                db.announcements = (data.announcements || []).filter(item => item.teacherId === currentTeacherId);
 
                 renderTeacherProfile();
                 updateSidebarCounters();
                 renderDynamicSection();
 
             } catch (err) {
-                showToast("فشل في جلب البيانات الدورية من السيرفر.");
+                showToast("فشل تواصل الخادم مع ملف data.json الموحد.");
             }
         }
 
         function renderTeacherProfile() {
             const teacher = db.teachers.find(t => t.id === currentTeacherId);
             if(!teacher) {
-                document.getElementById('teacher-profile-target').innerHTML = `<p style="padding:20px; color:#ef4444; font-weight:700;">خطأ: المدرس المطلوب غير موجود بملف البيانات.</p>`;
+                document.getElementById('teacher-profile-target').innerHTML = `<p style="padding:20px; color:#ef4444; font-weight:700;">المدرس المطلوب غير متاح حالياً بقاعدة البيانات الموحدة.</p>`;
                 return;
             }
 
@@ -251,7 +256,7 @@
             for(let i=1; i<=5; i++) { stars += `<i class="fa-solid fa-star" style="color:#f59e0b; font-size:0.8rem;"></i>`; }
 
             document.getElementById('teacher-profile-target').innerHTML = `
-                <img src="${teacher.img}" class="t-large-img" loading="lazy" alt="">
+                <img src="${teacher.img}" class="t-large-img" loading="lazy" alt="${teacher.name}">
                 <div class="t-info-block">
                     <span class="t-subject">${teacher.subject}</span>
                     <div class="t-name-row">
@@ -262,9 +267,10 @@
                     <div class="t-stats-grid">
                         <div class="stat-badge"><i class="fa-solid fa-users" style="color:var(--accent)"></i>الطلاب: <strong>${teacher.students}+</strong></div>
                         <div class="stat-badge"><i class="fa-solid fa-star" style="color:#f59e0b"></i>التقييم: <strong>${teacher.rating} ${stars}</strong></div>
+                        <div class="stat-badge"><i class="fa-solid fa-play"></i>المحاضرات: <strong>${db.lectures.length}</strong></div>
                     </div>
                     <div class="t-actions-row">
-                        <button class="btn-share" onclick="navigator.clipboard.writeText(window.location.href); showToast('تم نسخ الرابط الحركي!');"><i class="fa-regular fa-copy"></i> نسخ الرابط</button>
+                        <button class="btn-share" onclick="navigator.clipboard.writeText(window.location.href); showToast('تم نسخ الرابط الفريد بنجاح!');"><i class="fa-regular fa-copy"></i> نسخ رابط الفضاء العلمي</button>
                     </div>
                 </div>
             `;
@@ -278,10 +284,10 @@
             document.getElementById('count-announcements').innerText = db.announcements.length;
         }
 
-        function switchSection(section, element) {
+        function switchSection(sectionName, element) {
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
-            currentSection = section;
+            currentSection = sectionName;
             renderDynamicSection();
         }
 
@@ -300,15 +306,19 @@
             let dataPool = db[currentSection] || [];
 
             if(currentCategoryFilter !== 'all' && currentSection !== 'announcements') {
-                dataPool = dataPool.filter(i => i.category === currentCategoryFilter);
+                dataPool = dataPool.filter(item => item.category === currentCategoryFilter);
             }
 
             if(searchWord) {
-                dataPool = dataPool.filter(i => (i.title || '').toLowerCase().includes(searchWord) || (i.desc || '').toLowerCase().includes(searchWord));
+                dataPool = dataPool.filter(item => {
+                    const title = (item.title || '').toLowerCase();
+                    const desc = (item.desc || '').toLowerCase();
+                    return title.includes(searchWord) || desc.includes(searchWord);
+                });
             }
 
             if(dataPool.length === 0) {
-                target.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px 0;"><i class="fa-regular fa-folder-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>لا يوجد محتوى متاح لهذا المدرس حالياً.</div>`;
+                target.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 50px 0;"><i class="fa-regular fa-folder-open" style="font-size: 2.5rem; margin-bottom: 15px; display: block; color: var(--accent);"></i>لا توجد عناصر مرفوعة لهذا الأستاذ تحت هذه الفلاتر حالياً.</div>`;
                 return;
             }
 
@@ -317,7 +327,7 @@
                 let html = '';
                 if(currentSection === 'lectures') {
                     html = `
-                        <div class="lecture-card fade-in">
+                        <div class="lecture-card reveal-card">
                             <div class="card-img-wrapper">
                                 ${item.isNew ? '<span class="badge-new">جديدة</span>' : ''}
                                 <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400" loading="lazy">
@@ -325,40 +335,54 @@
                             <div class="card-body">
                                 <h3>${item.title}</h3>
                                 <p class="desc">${item.desc}</p>
-                                <div class="card-meta-line"><span><i class="fa-regular fa-clock"></i> ${item.duration}</span><span><i class="fa-regular fa-calendar"></i> ${item.date}</span></div>
-                                <div class="card-actions"><button class="btn-main-act" onclick="showToast('جاري تشغيل الفيديو...')">مشاهدة</button></div>
+                                <div class="card-meta-line">
+                                    <span><i class="fa-regular fa-clock"></i> ${item.duration}</span>
+                                    <span><i class="fa-regular fa-calendar"></i> ${item.date}</span>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="btn-main-act" onclick="showToast('جاري استدعاء مشغل الفيديو عالي الأداء...')"><i class="fa-solid fa-circle-play"></i> دخول المحاضرة</button>
+                                    <button class="btn-fav" onclick="showToast('تم الحفظ بالملف الشخصي')"><i class="fa-regular fa-heart"></i></button>
+                                </div>
                             </div>
                         </div>`;
                 } else if(currentSection === 'pdfs') {
                     html = `
-                        <div class="pdf-card fade-in">
+                        <div class="pdf-card reveal-card">
                             <img src="${item.cover}" class="pdf-cover" loading="lazy">
                             <div class="pdf-info">
                                 <h3>${item.title}</h3>
-                                <p class="pdf-meta">${item.pages} صفحة | ${item.size}</p>
-                                <div class="card-actions"><button class="btn-main-act" style="padding:6px 12px;" onclick="showToast('جاري التحميل...')">تحميل</button></div>
+                                <p class="pdf-meta"><i class="fa-regular fa-file"></i> ${item.pages} صفحة | حجم ${item.size}</p>
+                                <div class="card-actions">
+                                    <button class="btn-main-act" style="padding: 8px 14px;" onclick="showToast('بدء تحميل الملزمة الفوري...')"><i class="fa-solid fa-cloud-arrow-down"></i> تحميل المستند</button>
+                                </div>
                             </div>
                         </div>`;
                 } else if(currentSection === 'exams') {
                     html = `
-                        <div class="task-card fade-in">
-                            <div class="task-header"><h3 class="task-title">${item.title}</h3><span class="badge-difficulty diff-${item.difficulty}">${item.difficulty}</span></div>
-                            <p class="pdf-meta" style="margin-bottom:15px;">الأسئلة: ${item.questions} | الزمن: ${item.time}</p>
-                            <button class="btn-main-act" style="width:100%;" onclick="showToast('بدء الاختبار...')">بدء الامتحان</button>
+                        <div class="task-card reveal-card">
+                            <div class="task-header">
+                                <h3 class="task-title">${item.title}</h3>
+                                <span class="badge-difficulty diff-${item.difficulty}">${item.difficulty}</span>
+                            </div>
+                            <p class="pdf-meta" style="margin-bottom: 20px;">عدد الأسئلة: ${item.questions} سؤال | زمن الاختبار: ${item.time}</p>
+                            <button class="btn-main-act" style="width: 100%;" onclick="showToast('جاري تهيئة خادم الاختبار المؤمن...')">ابدأ الاختبار الفوري</button>
                         </div>`;
                 } else if(currentSection === 'assignments') {
                     html = `
-                        <div class="task-card fade-in">
-                            <div class="task-header"><h3 class="task-title">${item.title}</h3><span class="badge-difficulty status-not-started">لم يبدأ</span></div>
-                            <p class="pdf-meta" style="margin-bottom:15px;">آخر موعد: ${item.deadline}</p>
-                            <button class="btn-main-act" style="width:100%; background:var(--text-main); color:var(--bg-base);" onclick="showToast('ارفه ملف الحل...')">رفع الحل</button>
+                        <div class="task-card reveal-card">
+                            <div class="task-header">
+                                <h3 class="task-title">${item.title}</h3>
+                                <span class="badge-difficulty status-not-started">لم يسلم</span>
+                            </div>
+                            <p class="pdf-meta" style="margin-bottom: 20px;"><i class="fa-regular fa-calendar-xmark"></i> موعد التسليم النهائي: ${item.deadline}</p>
+                            <button class="btn-main-act" style="width: 100%; background: var(--text-main); color: var(--bg-base);" onclick="showToast('قم بسحب وإفلات ملف الحل...')"><i class="fa-solid fa-arrow-up-from-bracket"></i> رفع ملف الإجابة</button>
                         </div>`;
                 } else if(currentSection === 'announcements') {
                     html = `
-                        <div class="announcement-card fade-in" style="grid-column: 1/-1;">
+                        <div class="announcement-card reveal-card" style="grid-column: 1/-1;">
                             <div class="ann-head"><i class="fa-solid fa-bullhorn"></i> ${item.title}</div>
                             <p class="ann-text">${item.text}</p>
-                            <span class="pdf-meta">${item.date} | ${item.time}</span>
+                            <div class="pdf-meta"><i class="fa-regular fa-clock"></i> نشر بتاريخ ${item.date} الساعة ${item.time}</div>
                         </div>`;
                 }
                 target.innerHTML += html;
@@ -370,7 +394,7 @@
             const el = document.createElement('div');
             el.className = 'toast'; el.innerText = msg;
             container.appendChild(el);
-            setTimeout(() => el.remove(), 3000);
+            setTimeout(() => el.remove(), 3500);
         }
 
         function initSystemThemes() {
